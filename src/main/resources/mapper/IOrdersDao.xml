@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IOrdersDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="OrdersPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into orders(user_id,order_code,room_id,pay,status,create_time)
+        values(#{userId},#{orderCode},#{roomId},#{pay},#{status},#{createTime})
+    </insert>
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from orders
+        where id = #{id}
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="OrdersPojo">
+        update orders
+        <set>
+            <if test="userId > 0">
+                user_id = #{userId},
+            </if>
+            <if test="roomId > 0">
+                room_id = #{roomId},
+            </if>
+            <if test="pay > 0">
+                pay = #{pay},
+            </if>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <!-- 更新信息 -->
+    <update id="updateByMap" parameterType="map">
+        update orders
+        <set>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+               and id=#{id}
+            </if>
+            <if test="ids != null">
+                and id in
+                <foreach collection="ids" open="(" separator="," item="id" close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+
+    <select id="getById" parameterType="int" resultType="OrdersPojo">
+        select * from  orders where id=#{id}
+    </select>
+
+    <select id="selectOrdersList" parameterType="HashMap" resultType="OrdersPojo">
+        select * from  orders
+        <where>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+            <if test="ids != null">
+                and id in
+                <foreach collection="ids" open="(" separator="," item="id" close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <sql id="selectSql">
+        <where>
+            <if test="hashId != null">
+                and h.user_id = #{hashId}
+            </if>
+            <if test="orderCode != null">
+                and o.order_code like '%${orderCode}%'
+            </if>
+            <if test="status > 0">
+                and o.status = #{status}
+            </if>
+            <if test="userId != null">
+                and o.user_id = #{userId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(o.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(o.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+    </sql>
+
+    <select id="countOrders" parameterType="HashMap" resultType="Integer">
+        select count(*)  from  orders o
+        left join user u on o.user_id = u.id
+        left join room r on o.room_id = r.id
+        left join hotel h on r.hotel_id = h.id
+        <include refid="selectSql"/>
+    </select>
+
+    <select id="selectOrdersDetailList" parameterType="HashMap" resultMap="orderMap">
+        select o.*,
+        u.id as uId,u.username as uName,
+        r.id as rId,r.number as rNumber,h.name as hName
+        from  orders o
+        left join user u on o.user_id = u.id
+        left join room r on o.room_id = r.id
+        left join hotel h on r.hotel_id = h.id
+        <include refid="selectSql"/>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <!--  返回数据集合只需要几个字段 -->
+    <resultMap type="OrdersPojo" id="orderMap">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="userId" column="user_id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="pay" column="pay"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="user" javaType="UserPojo">
+            <result property="id" column="uId"/>
+            <result property="username" column="uName"/>
+        </association>
+        <association property="room" javaType="RoomPojo">
+            <result property="id" column="rId"/>
+            <result property="number" column="rNumber"/>
+            <result property="hotel.name" column="hName"/>
+        </association>
+    </resultMap>
+</mapper>

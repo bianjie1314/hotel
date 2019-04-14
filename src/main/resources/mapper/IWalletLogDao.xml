@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IWalletLogDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="WalletLogPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into wallet_log(user_id,order_id,money,type,note,create_time)
+        values(#{userId},#{orderId},#{money},#{type},#{note},#{createTime})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from wallet_log
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from wallet_log
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectWalletLogList" parameterType="HashMap" resultType="WalletLogPojo">
+        select wl.*,os.order_code as orderCode,u.username as username
+        from  wallet_log wl left join orders os on wl.order_id = os.id
+        left join user u on u.id = wl.user_id
+        <where>
+            <if test="type != null">
+                and wl.type = #{type}
+            </if>
+            <if test="inputCheck != null">
+                and os.order_code like '%${inputCheck}%' or u.username  like '%${inputCheck}%'
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(wl.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(wl.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultType="WalletLogPojo">
+        select * from  wallet_log where id=#{id}
+    </select>
+
+
+</mapper>

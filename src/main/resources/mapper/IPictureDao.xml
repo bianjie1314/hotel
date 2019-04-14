@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IPictureDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="PicturePojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into picture(path_url,type,create_time)
+        values(#{pathUrl},#{type},#{createTime})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from picture
+        where id = #{id}
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="PicturePojo">
+        update picture
+        <set>
+            <if test="pathUrl != null">
+                path_url = #{pathUrl},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="selectPictureList" parameterType="HashMap" resultType="PicturePojo">
+        select * from  picture
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultType="PicturePojo">
+        select * from  picture where  id=#{id}
+    </select>
+
+
+    <select id="getByIds" parameterType="String" resultType="PicturePojo">
+        select * from  picture where  id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

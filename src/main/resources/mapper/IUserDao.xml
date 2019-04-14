@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IUserDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="UserPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into user(mobile,username,password,identity,balance,role_id,create_time)
+        values(#{mobile},#{username},#{password},#{identity},#{balance},#{roleId},#{createTime})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from user
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from user
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="UserPojo">
+        update user
+        <set>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="identity != null">
+                identity = #{identity},
+            </if>
+            <if test="roleId > 0">
+                role_id = #{roleId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="sqlFiels">
+        select
+		u.id,mobile,username,u.identity,u.balance,u.create_time,u.update_time,r.name as roleName,u.role_id
+		from  user u left join role r on u.role_id = r.id
+	</sql>
+
+    <select id="selectUserList" parameterType="HashMap" resultType="UserPojo">
+        <include refid="sqlFiels" />
+        <where>
+            <if test="inputCheck != null">
+               and mobile like '%${inputCheck}%' or  username like '%${inputCheck}%' or identity like '%${inputCheck}%'
+            </if>
+            <if test="username != null">
+               and username like '%${username}%'
+            </if>
+            <if test="roleId > 0">
+               and role_id = #{roleId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(u.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(u.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultType="UserPojo">
+        <include refid="sqlFiels" />
+        where u.id=#{id}
+    </select>
+
+    <select id="countByMobile" parameterType="string" resultType="Integer">
+        select count(*) from user where mobile=#{mobile}
+    </select>
+
+    <select id="getByMobileAndPwd" parameterType="string" resultType="UserPojo">
+        select id,mobile,username,identity,balance,create_time,update_time,role_id
+        from  user where mobile = #{mobile} and password = #{password}
+    </select>
+
+</mapper>

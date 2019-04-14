@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IOrderProcessLogDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="OrderProcessLogPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into order_process_log(order_id,type,user_id,note,create_time)
+        values(#{order_id},#{type},#{user_id},#{note},#{createTime})
+    </insert>
+
+    <!-- 添加 -->
+    <insert id="insertBatch" parameterType="list">
+        insert into order_process_log(order_id,type,user_id,note,create_time)
+        values
+        <foreach collection="beans" separator="," item="bean">
+            (#{bean.order_id},#{bean.type},#{bean.user_id},#{bean.note},#{bean.createTime})
+        </foreach>
+    </insert>
+
+
+    <select id="selectByOrderId" parameterType="Integer" resultType="OrderProcessLogPojo">
+        select * from  order_process_log where order_id = #{orderId}
+    </select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IRoleDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="RolePojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into role(name,create_time)
+        values(#{name},#{createTime})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from role
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from role
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="RolePojo">
+        update role
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="selectRoleList" parameterType="HashMap" resultType="RolePojo">
+        select * from  role
+        <where>
+            <if test="name != null">
+                and name like '%${name}%'
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultType="RolePojo">
+        select * from  role where id=#{id}
+    </select>
+
+    <select id="countByName" parameterType="String" resultType="Integer">
+        select count(*) from  role where name=#{name}
+    </select>
+
+
+</mapper>
