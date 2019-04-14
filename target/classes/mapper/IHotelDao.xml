@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IHotelDao">
+
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="HotelPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into hotel(user_id,name,status,picture_ids,location,create_time,open_time)
+        values(#{userId},#{name},#{status},#{picture_ids},#{location},#{createTime},#{openTime})
+    </insert>
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from hotel
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from hotel
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="HotelPojo">
+        update hotel
+        <set>
+            <if test="userId > 0">
+                user_id = #{userId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="pictureIds != null">
+                picture_ids = #{pictureIds},
+            </if>
+            <if test="location != null">
+                location = #{location},
+            </if>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="openTime != null">
+                open_time = #{openTime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="getById" parameterType="int" resultType="HotelPojo">
+        select * from  hotel where id=#{id}
+    </select>
+
+
+    <select id="getHotelInfo" parameterType="int" resultType="HotelPojo">
+        select name,id from  hotel
+        <if test="userId > 0">
+            where user_id=#{userId}
+        </if>
+    </select>
+
+
+
+
+    <select id="selectHotelList" parameterType="HashMap" resultMap="hotelMap">
+        select s.id,s.name,s.location,s.status,s.create_time,s.update_time,s.open_time,
+        u.id as uId,u.username as uName from  hotel s left join user u on u.id = s.user_id
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="name != null">
+                and name like '%${name}%'
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <!--  返回数据集合只需要几个字段 -->
+    <resultMap type="HotelPojo" id="hotelMap">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="location" column="location"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="openTime" column="open_time"/>
+        <association property="user" javaType="UserPojo">
+            <result property="id" column="uId"/>
+            <result property="username" column="uName"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

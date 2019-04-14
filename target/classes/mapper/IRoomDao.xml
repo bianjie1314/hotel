@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IRoomDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="RoomPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into room(number,status,hotel_id,area,toilet,window,create_time,update_time,money,deposit,picture_ids)
+        values(#{number},#{status},#{hotelId},#{area},#{toilet},#{window},#{createTime},#{updateTime},#{money},#{deposit},#{pictureIds})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from room
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from room
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="RoomPojo">
+        update room
+        <set>
+            <if test="number != null">
+                number = #{number},
+            </if>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+            <if test="hotelId > 0">
+                hotel_id = #{hotelId},
+            </if>
+            <if test="area > 0">
+                area = #{area},
+            </if>
+            <if test="toilet > 0">
+                toilet = #{toilet},
+            </if>
+            <if test="window > 0">
+                window = #{window},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="money > 0">
+                money = #{money},
+            </if>
+            <if test="deposit > 0">
+                deposit = #{deposit},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="selectSql">
+        from  room r  left join hotel h on r.hotel_id = h.id
+        <where>
+            <if test="userId != null">
+                and h.user_id = #{userId}
+            </if>
+            <if test="number != null">
+                and r.number like '%${number}%'
+            </if>
+            <if test="hotelId != null">
+                and r.hotel_id = #{hotelId}
+            </if>
+            <if test="hotelInfo != null">
+                and h.name  like '%${hotelInfo}%' or h.location like '%${hotelInfo}%' or r.number like '%${hotelInfo}%'
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(r.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(r.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+            <if test="updateTime != null">
+                and TO_DAYS(r.update_time) = TO_DAYS(#{updateTime})
+            </if>
+        </where>
+    </sql>
+
+    <select id="countRoomList"  parameterType="HashMap" resultType="Integer">
+        select count(*)
+        <include refid="selectSql"/>
+    </select>
+
+    <select id="selectRoomList" parameterType="HashMap" resultMap="roomMap">
+        select r.*,h.id as hId,h.name as hName
+        <include refid="selectSql"/>
+        order by r.create_time desc
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultMap="roomMap">
+        select r.*,h.id as hId,h.name as hName from  room r  left join hotel h on r.hotel_id = h.id where r.id=#{id}
+    </select>
+
+    <!--  返回数据集合只需要几个字段 -->
+    <resultMap type="RoomPojo" id="roomMap">
+        <result property="id" column="id"/>
+        <result property="number" column="number"/>
+        <result property="status" column="status"/>
+        <result property="area" column="area"/>
+        <result property="toilet" column="toilet"/>
+        <result property="window" column="window"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="hotelId" column="hotel_id"/>
+        <result property="money" column="money"/>
+        <result property="deposit" column="deposit"/>
+        <result property="pictureIds" column="picture_ids"/>
+        <association property="hotel" javaType="HotelPojo">
+            <result property="id" column="hId"/>
+            <result property="name" column="hName"/>
+        </association>
+    </resultMap>
+
+</mapper>

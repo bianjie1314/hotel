@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IEvelateDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="EvelatePojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into evelate(content,order_id,create_time,status,updateTime)
+        values(#{content},#{orderId},#{createTime},#{status},#{update_time})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from evelate
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByChoiceId" parameterType="java.util.List">
+        delete from evelate
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="EvelatePojo">
+        update evelate
+        <set>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="querySql">
+        from  evelate e
+        left join orders o on e.order_id = o.id
+        left join user u on o.user_id = u.id
+        <where>
+            <if test="inputCheck != null">
+                and o.order_code like '%${inputCheck}%'
+            </if>
+            <if test="roomId != null">
+                and o.room_id = #{roomId}
+            </if>
+            <if test="status != null">
+                and e.status = #{status}
+            </if>
+            <if test="userId != null">
+                and o.user_id = #{userId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(e.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(e.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectEvelateList" parameterType="HashMap" resultMap="evelateMap">
+        select e.*,
+        o.order_code as orderCode,
+        u.id as uId,u.username as uName
+        <include refid="querySql" />
+        order by e.create_time desc
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="countEvelateList" parameterType="HashMap" resultType="Integer">
+        select count(*)
+        <include refid="querySql" />
+    </select>
+
+
+    <!--  返回数据集合只需要几个字段 -->
+    <resultMap type="EvelatePojo" id="evelateMap">
+        <id property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderCode" column="orderCode" />
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="user" javaType="UserPojo">
+            <result property="id" column="uId"/>
+            <result property="username" column="uName"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getById" parameterType="int" resultType="EvelatePojo">
+        select * from  evelate where id=#{id}
+    </select>
+
+
+</mapper>

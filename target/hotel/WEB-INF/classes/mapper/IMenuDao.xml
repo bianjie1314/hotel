@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.syshotel.dao.IMenuDao">
+
+    <!-- 添加 -->
+    <insert id="addBean" parameterType="MenuPojo">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into menu(name,url,icon,status,create_time,parent_id,`index`)
+        values(#{name},#{url},#{icon},#{status},#{createTime},#{parentId},#{index})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from menu
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByMap" parameterType="map">
+        delete from menu
+        <where>
+            <if test="id != null">
+               and id = #{id}
+            </if>
+            <if test="ids != null">
+                and id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parent}
+            </if>
+            <if test="parentIds != null">
+                and parent_id in
+                <foreach collection="parentIds" open="(" close=")" separator="," item="parent">
+                    #{parent}
+                </foreach>
+            </if>
+        </where>
+
+    </delete>
+
+    <!-- 更新信息 -->
+    <update id="updateBean" parameterType="MenuPojo">
+        update menu
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="status > 0">
+                status = #{status},
+            </if>
+            <if test="parentId > 0">
+                parent_id = #{parentId},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="index> 0">
+                `index` = #{index},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="queryByMap" parameterType="HashMap" resultType="MenuPojo">
+        select * from  menu
+        <where>
+            <if test="name != null">
+                and name like '%${name}%'
+            </if>
+            <if test="status > 0">
+                and status = #{status}
+            </if>
+            <if test="parent != null and parent == 1">
+                and parent_id is null
+            </if>
+            <if test="parent != null and parent == 2">
+                and parent_id is not null
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+        </where>
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+    <select id="getById" parameterType="int" resultType="MenuPojo">
+        select * from  menu where id=#{id}
+    </select>
+
+    <select id="selectNormalMenu"  resultType="RoleMenuVo">
+        select id,name from menu where status = 1;
+    </select>
+
+
+
+    <select id="countByName" parameterType="String" resultType="Integer">
+        select count(*) from  menu where name=#{name}
+    </select>
+
+    <!-- 获取父菜单 -->
+    <select id="queryMenuByRoleId" parameterType="Integer" resultMap="menuViewMap">
+        select rm.role_id as roleId,m.id as parentId,m.name as parentName,m.icon as parentIcon from  role_menu rm left join menu m on rm.menu_id = m.id
+        WHERE m.parent_id is null and m.`status` = 1  and rm.role_id = #{roleId}
+        ORDER BY `index` asc;
+    </select>
+
+    <!-- 获取子菜单 -->
+    <select id="findMenuItemByParentId" parameterType="Map" resultType="MenuPojo">
+        select m.id,m.name,m.icon,m.url,m.parent_id from  role_menu rm left join menu m on rm.menu_id = m.id
+        WHERE m.parent_id = #{parentId,jdbcType=INTEGER} and m.`status` = 1  and rm.role_id = #{roleId,jdbcType=INTEGER}
+        ORDER BY `index` asc;
+    </select>
+
+
+    <!--  返回数据集合只需要几个字段 -->
+    <resultMap type="MenuViewVo" id="menuViewMap">
+        <id property="roleId" column="roleId"/>
+        <id property="parentId" column="parentId"/>
+        <result property="parentName" column="parentName"/>
+        <result property="parentIcon" column="parentIcon"/>
+        <collection property="items" select="findMenuItemByParentId" column="{parentId=parentId,roleId=roleId}" javaType="java.util.ArrayList" ofType="MenuPojo">
+        </collection>
+    </resultMap>
+
+
+</mapper>
