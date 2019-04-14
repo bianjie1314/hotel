@@ -6,7 +6,9 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4274b3c9-a05e-4481-9110-6c9694d5072c" name="Default" comment="" />
+    <list default="true" id="4274b3c9-a05e-4481-9110-6c9694d5072c" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -138,6 +140,9 @@
       <find>buyNum</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -255,6 +260,7 @@
     <option name="width" value="1378" />
     <option name="height" value="773" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -665,15 +671,16 @@
       <workItem from="1554399177768" duration="2223000" />
       <workItem from="1554685715463" duration="587000" />
       <workItem from="1554812191112" duration="6065000" />
-      <workItem from="1555069940776" duration="3487000" />
+      <workItem from="1555069940776" duration="4914000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="83921000" />
+    <option name="totallyTimeSpent" value="85348000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1657" y="345" width="1378" height="773" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Event Log" order="0" side_tool="true" />
@@ -688,18 +695,18 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
-      <window_info anchor="bottom" id="Debug" order="10" visible="true" weight="0.5351014" />
+      <window_info active="true" anchor="bottom" id="Debug" order="10" visible="true" weight="0.559375" />
       <window_info anchor="bottom" id="TODO" order="14" />
       <window_info anchor="bottom" id="Messages" order="3" weight="0.4199584" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="bottom" id="Java Enterprise" order="4" weight="0.3298969" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="5" />
       <window_info anchor="bottom" id="Run" order="9" weight="0.5626888" />
       <window_info anchor="bottom" id="Spring" order="13" weight="0.37457046" />
       <window_info anchor="bottom" id="Terminal" order="6" weight="0.58161515" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49907407" visible="true" weight="0.27389985" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49907407" visible="true" weight="0.27389985" />
       <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info id="Web" order="2" sideWeight="0.5009259" side_tool="true" weight="0.1581876" />
       <window_info anchor="right" id="Theme Preview" order="3" />
