@@ -9,7 +9,7 @@
             select last_insert_id()
         </selectKey>
         insert into hotel(user_id,name,status,picture_ids,location,create_time,open_time)
-        values(#{userId},#{name},#{status},#{picture_ids},#{location},#{createTime},#{openTime})
+        values(#{userId},#{name},#{status},#{pictureIds},#{location},#{createTime},#{openTime})
     </insert>
 
 

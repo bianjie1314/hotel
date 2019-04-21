@@ -15,6 +15,13 @@ public interface IOrdersDao {
     public int addBean(OrdersPojo ordersPojo);
 
     /**
+     * 统计数量
+     * @param id
+     * @return
+     */
+    public Map<String,Integer> countOrderStatus(int id);
+
+    /**
      * 通过id删除
      * @param id
      */
@@ -59,4 +66,11 @@ public interface IOrdersDao {
      * @return
      */
     public int countOrders(Map<String, Object> queryMap);
+
+    /**
+     * 统计需要支付的费用
+     * @param map
+     * @return
+     */
+    public double countNeedPay(Map<String,Object> map);
 }

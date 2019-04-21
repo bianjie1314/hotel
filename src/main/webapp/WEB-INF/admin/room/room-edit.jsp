@@ -91,7 +91,22 @@
 				<select name="status"class="select" id="status">
 					<option value="1" selected="selected">正常</option>
 					<option value="2">使用中</option>
+					<option value="3">下线</option>
 				</select>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">原照片：</label>
+			<div class="image-more">
+				<ul class="row">
+					<c:if test="${roomInfo.pictures != null }">
+						<c:forEach items="${roomInfo.pictures }" var="pic" varStatus="status">
+							<li class="col-lg-3 col-sm-3 col-xs-4">
+								<img class="img-responsive" src="${pageContext.request.contextPath }${pic.pathUrl}" style="width:150px;height:220px">
+							</li>
+						</c:forEach>
+					</c:if>
+				</ul>
 			</div>
 		</div>
 		<div class="row cl">
@@ -113,12 +128,6 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">详细内容：</label>
-			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" type="text/plain" style="width:100%;height:400px;" ></script>
 			</div>
 		</div>
 		<div class="row cl">

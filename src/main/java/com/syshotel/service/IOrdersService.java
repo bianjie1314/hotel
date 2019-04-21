@@ -3,19 +3,31 @@ package com.syshotel.service;
 import com.syshotel.common.CommonResult;
 import com.syshotel.common.PageBean;
 import com.syshotel.common.SearchVo;
+import com.syshotel.pojo.OrderProcessLogPojo;
 import com.syshotel.pojo.OrdersPojo;
 import com.syshotel.pojo.UserPojo;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IOrdersService {
 
     /**
      * 添加信息
-     * @param ordersPojo
+     * @param roomId
+     * @param startTime
+     * @param endTime
+     * @param user
      * @return
      */
-    public CommonResult addBean(OrdersPojo ordersPojo);
+    public CommonResult addBean(Integer roomId, String startTime, String endTime, UserPojo user);
+
+    /**
+     * 统计各种订单的数量
+     * @param user
+     * @return
+     */
+    public CommonResult countOrderStatus(UserPojo user);
 
     /**
      * 通过id删除
@@ -62,25 +74,6 @@ public interface IOrdersService {
      */
     public CommonResult updateStatus(int id, int status);
 
-
-
-    /**
-     * 发货
-     * @param idStr
-     * @param userPojo
-     * @return
-     */
-    public CommonResult delieveryOrder(String idStr, UserPojo userPojo);
-
-
-    /**
-     * 退货
-     * @param idStr
-     * @param status
-     * @return
-     */
-    public CommonResult returnOrder(String idStr, int status, UserPojo userPojo);
-
     /**
      * 更新订单数量
      * @param orders
@@ -102,4 +95,44 @@ public interface IOrdersService {
      * @return
      */
     public CommonResult countPayFree(String orderIds);
+
+    /**
+     * 用户已入住
+     * @param choiceId
+     * @param userInfo
+     * @return
+     */
+    public CommonResult userEnterOrder(String choiceId, UserPojo userInfo);
+
+    /**
+     * 取消订单
+     * @param choiceId
+     * @param userInfo
+     * @return
+     */
+    public CommonResult cancerOrder(String choiceId, UserPojo userInfo);
+
+    /**
+     * 退房操作
+     * @param choiceId
+     * @param userInfo
+     * @return
+     */
+    public CommonResult finishOrder(String choiceId, UserPojo userInfo);
+    /**
+     * 延长入住
+     * @param orderProcessLogPojo
+     * @param userInfo
+     * @return
+     */
+    public CommonResult continueOrder(OrderProcessLogPojo orderProcessLogPojo, UserPojo userInfo);
+
+    /**
+     * 计算延长入住时间需要付的费用
+     * @param roomId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public CommonResult countContinuePay(int roomId, String startTime, String endTime);
 }

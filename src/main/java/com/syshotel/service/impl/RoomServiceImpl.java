@@ -33,6 +33,7 @@ public class RoomServiceImpl implements IRoomService {
         if (roomPojo.getHotelId() <= 0){
             return CommonResult.ERROR(MessageConstant.HOTEL_ERROR);
         }
+        roomPojo.setStatus(Constant.ROOM_STATUS_NORMAL);
         roomPojo.setCreateTime(new Date());
         int result = iRoomDao.addBean(roomPojo);
         if (result <= 0){
@@ -65,6 +66,10 @@ public class RoomServiceImpl implements IRoomService {
         if (roomPojo == null || roomPojo.getId() <= 0){
             return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
         }
+        //获取酒店编号
+        if (roomPojo.getHotelId() <= 0){
+            return CommonResult.ERROR(MessageConstant.HOTEL_ERROR);
+        }
         roomPojo.setUpdateTime(new Date());
         iRoomDao.updateBean(roomPojo);
         return CommonResult.SUCCESS(MessageConstant.UPDATE_SUCCESS,null);
@@ -80,7 +85,7 @@ public class RoomServiceImpl implements IRoomService {
     private Map<String,Object> getQueryMap(SearchVo searchVo, PageBean page,UserPojo userInfo){
         Map<String,Object> paramMap = new HashMap<>();
         if (userInfo != null && userInfo.getRoleId() != Constant.USER_ADMIN){//非管理员
-            paramMap.put("hashId",userInfo.getId());
+            paramMap.put("userId",userInfo.getId());
         }
         if (searchVo != null){
             if (!StringUtils.isEmpty(searchVo.getText())){
@@ -110,12 +115,12 @@ public class RoomServiceImpl implements IRoomService {
     public CommonResult selectRoomPage(SearchVo searchVo, PageBean page,UserPojo userInfo) {
         Map<String, Object> queryMap = getQueryMap(searchVo, page,userInfo);
         //数量为0
-        int count = iRoomDao.countRoomList(queryMap);
+        int count = iRoomDao.countPage(queryMap);
         if (count == 0){
             return CommonResult.SUCCESS(0,null);
         }
         page.setTotal(count);
-        List<RoomPojo> roomPojos = iRoomDao.selectRoomList(queryMap);
+        List<RoomPojo> roomPojos = iRoomDao.selectPage(queryMap);
         if (roomPojos != null && roomPojos.size() > 0){
             for (RoomPojo p: roomPojos ) {
                 if (!StringUtils.isEmpty(p.getPictureIds())){
@@ -137,6 +142,12 @@ public class RoomServiceImpl implements IRoomService {
             }
         }
         return roomPojo;
+    }
+
+    @Override
+    public CommonResult updateByMap(Map<String, Object> map) {
+        iRoomDao.updateByMap(map);
+        return CommonResult.SUCCESS(MessageConstant.UPDATE_SUCCESS,null);
     }
 
 }

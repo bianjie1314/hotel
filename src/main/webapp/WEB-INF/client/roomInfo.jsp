@@ -13,7 +13,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">
@@ -51,7 +51,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 <!--noSearch-->
 <jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/noSearch.jsp"/>
 <!--Navigation-->
-<jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/menu.jsp"/>
+<jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/onlyIndexMenu.jsp"/>
 	<!--//////////////////////////////////////////////////-->
 	<!--///////////////////Product Page///////////////////-->
 	<!--//////////////////////////////////////////////////-->
@@ -95,13 +95,20 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 								<div class="name"><h3>${roomInfo.number}房</h3></div>
 								<div class="info">
 									<ul>
-										<li>售价:￥${roomInfo.money}</li>
+										<li>房租:￥${roomInfo.money}/天</li>
 										<li>押金:￥${roomInfo.deposit}(入住付)</li>
 									</ul>
 								</div>
 								<div class="price">售价:￥${roomInfo.money}</div>
-								<div class="rating"><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star-empty"></span></div>
-								<div class="well"><a href="javascript:;" onclick="addToCar()" class="btn btn-2 ">加入购物车</a></div>
+								<div class="rating">
+									入住时间： <input type="text"
+																	 onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })"
+																	 id="logmin" class="input-text Wdate" style="width: 120px;" name="startTime">
+									- <input type="text"
+											 onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}'})"
+											 id="logmax" class="input-text Wdate" style="width: 120px;" name="endTime" >
+								</div>
+								<div class="well"><a href="javascript:;" onclick="addToCar()" class="btn btn-2 ">确认预定</a></div>
 								<div class="share well">
 									<strong style="margin-right: 13px;">店铺 :</strong>
 									<a href="#" class="share-btn" target="_blank">
@@ -151,6 +158,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+<script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/clientlib/js/functions.js" ></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/lib/laypage/1.2/laypage.js"></script>
@@ -162,25 +170,36 @@ pageEncoding="UTF-8" isELIgnored="false" %>
      * 添加到购物车
      * */
     function addToCar(){
-        $.ajax({
-            type : 'post',
-            url : "${pageContext.request.contextPath }/client/order/addCar",
-            dataType : 'json',
-            contentType: 'application/json;charset=UTF-8',
-            success : function(data) {
-                if (data.result) {
-                    layer.msg(data.msg,{icon:1,time:2000});
-                    setTimeout(function(){
-                        parent.location.href = '${pageContext.request.contextPath }/dispatcher?view=/client/cart';
-                    }, 1200);//1.2秒后返回上一页
-                } else {
-                    layer.msg(data.msg, {icon : 5,time : 1000});
+        if ($("[name='startTime']").val() == null || $("[name='startTime']").val() == ""){
+            layer.msg("请选择入住开始时间",{icon:5,time:3000});
+		} else if($("[name='endTime']").val() == null || $("[name='endTime']").val() == ""){
+            layer.msg("请选择入住结束时间",{icon:5,time:3000});
+		}else {
+            $.ajax({
+                type : 'get',
+                url : "${pageContext.request.contextPath }/client/order/addCar",
+                dataType : 'json',
+                contentType: 'application/json;charset=UTF-8',
+                data:{
+                    "startTime":$("[name='startTime']").val(),
+                    "endTime":$("[name='endTime']").val(),
+                    "roomId":${roomInfo.id}
+                },
+                success : function(data) {
+                    if (data.result) {
+                        layer.msg(data.msg,{icon:1,time:2000});
+                        setTimeout(function(){
+                            parent.location.href = '${pageContext.request.contextPath }/dispatcher?view=/client/order/cart';
+                        }, 1200);//1.2秒后返回上一页
+                    } else {
+                        layer.msg(data.msg, {icon : 5,time : 1000});
+                    }
+                },
+                error : function(data) {
+                    console.log(data.msg);
                 }
-            },
-            error : function(data) {
-                console.log(data.msg);
-            }
-        });
+            });
+		}
     }
     $(document).ready(function(){
         $(".nav-tabs a").click(function(){
@@ -199,8 +218,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
             url : "${pageContext.request.contextPath }/client/room/getRoomPage",
             dataType : 'json',
             data:{
-                "text":"${phoneInfo.name}",	//名称
-                "category":"${phoneInfo.type}",	//类型
+                "text":"${roomInfo.number}",	//名称
                 "start":0,	//起始页
                 "offset":6	//数量
             },
@@ -229,7 +247,9 @@ pageEncoding="UTF-8" isELIgnored="false" %>
                                 '</div>'+
                                 '<div class="caption">'+
                                 '<div class="name"><h3><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo">'+room.number+'房￥'+room.money+'</a></h3></div>'+
+/*
                                 '<div class="rating"><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star-empty"></span></div>'+
+*/
                                 '</div>'+
                                 '</div>'+
                                 '</div>';
@@ -272,9 +292,11 @@ pageEncoding="UTF-8" isELIgnored="false" %>
                                 '<div class="product">'+
                                 '<a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo"><img src="'+pc+'" /></a>'+
                                 '<div class="wrapper">'+
-                                '<h5><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo">'+room.hotel.name+'</a></h5>'+
+                                '<h5><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo">'+room.number+'</a></h5>'+
                                 '<div class="price">￥'+room.money+ '</div>' +
+/*
                                 '<div class="rating"><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star-empty"></span></div>'+
+*/
                                 '</div>'+
                                 '</div>'
                             $("#shopProduct").append(productView);
@@ -312,7 +334,9 @@ pageEncoding="UTF-8" isELIgnored="false" %>
                                 '<div class="wrapper">'+
                                 '<div class="info">'+evelate.user.username+ '  '+timeStr+'</div>'+
                                 '<div class="content">'+evelate.content+'</span></div>'+
+/*
                                 '<div class="rating"><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star-empty"></span></div>'+
+*/
                                 '</div>'+
                                 '</div>'+
                                 '<hr/>'

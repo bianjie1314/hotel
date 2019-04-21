@@ -66,10 +66,20 @@ public class LoginController {
 	public CommonResult exit(HttpServletRequest request){
 		logger.info("********** 进入 exit 方法********** ");
 		//清空缓存
-		request.getSession().invalidate();
+		request.getSession().removeAttribute("userInfo");
 		return CommonResult.SUCCESS(MessageConstant.LOGIN_EXIT);
 	}
 
+
+	//退出登陆
+	@RequestMapping(value="/clientExit",method=RequestMethod.GET)
+	@ResponseBody
+	public CommonResult clientExit(HttpServletRequest request){
+		logger.info("********** 进入 clientExit 方法********** ");
+		//清空缓存
+		request.getSession().removeAttribute("clientUserInfo");
+		return CommonResult.SUCCESS(MessageConstant.LOGIN_EXIT);
+	}
 
 	//获取验证码
 	@RequestMapping(value = "/verify-code", method = RequestMethod.GET)

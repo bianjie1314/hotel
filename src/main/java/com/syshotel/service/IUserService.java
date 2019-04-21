@@ -86,4 +86,22 @@ public interface IUserService {
      * @return
      */
     public CommonResult forgetPwd(String username, String mobile, String newpassword);
+
+    /**
+     * 批量更新用户账户余额
+     * @param userPojos
+     * @return CommonResult
+     */
+    public CommonResult batchUpdateMoney(List<UserPojo> userPojos);
+
+
+    public CommonResult updateMoney(UserPojo userPojos) ;
+
+    /**
+     * 账户充值
+     * @param money
+     * @param userInfo
+     * @return
+     */
+    public CommonResult addBalance(double money, UserPojo userInfo);
 }

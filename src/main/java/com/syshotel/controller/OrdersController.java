@@ -4,6 +4,7 @@ package com.syshotel.controller;
 import com.syshotel.common.CommonResult;
 import com.syshotel.common.PageBean;
 import com.syshotel.common.SearchVo;
+import com.syshotel.pojo.OrderProcessLogPojo;
 import com.syshotel.pojo.UserPojo;
 import com.syshotel.service.IOrdersService;
 import org.slf4j.Logger;
@@ -11,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,26 +39,41 @@ public class OrdersController {
         return "admin/order/order-list";
     }
 
+    //根据id获取
+    @RequestMapping(value="/getOrderById/{orderId}",method=RequestMethod.GET )
+    public String getOrderById(@PathVariable("orderId") int id, String view, Model model){
+        logger.info("********** 进入 getOrderById 方法,id={}********** ",new Object[]{id});
+        model.addAttribute("orderInfo",iOrdersService.getById(id));
+        return view;
+    }
 
-    //发货
-    @RequestMapping(value = "/delieveryOrder", method = RequestMethod.GET)
+    //入住
+    @RequestMapping(value = "/userEnterOrder", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult delieveryOrder(String choiceId,HttpServletRequest request) {
-        logger.info("************  进入  delieveryOrder 方法,choiceId={} ************ ",new Object[]{choiceId});
+    public CommonResult userEnterOrder(String choiceId,HttpServletRequest request) {
+        logger.info("************  进入  userEnterOrder 方法,choiceId={} ************ ",new Object[]{choiceId});
         UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
-        return iOrdersService.delieveryOrder(choiceId,userInfo);
+        return iOrdersService.userEnterOrder(choiceId,userInfo);
     }
 
 
-    //退货
-    @RequestMapping(value = "/returnOrder", method = RequestMethod.GET)
+    //取消订单
+    @RequestMapping(value = "/cancerOrder", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult returnOrder(String choiceId,int status,HttpServletRequest request) {
-        logger.info("************  进入  returnOrder 方法,choiceId={},status={} ************ ",new Object[]{choiceId,status});
+    public CommonResult cancerOrder(String choiceId,HttpServletRequest request) {
+        logger.info("************  进入  cancerOrder 方法,choiceId={} ************ ",new Object[]{choiceId});
         UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
-        return iOrdersService.returnOrder(choiceId,status,userInfo);
+        return iOrdersService.cancerOrder(choiceId,userInfo);
     }
 
+    //退房确认
+    @RequestMapping(value = "/finishOrder", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult finishOrder(String choiceId,HttpServletRequest request) {
+        logger.info("************  进入  finishOrder 方法,choiceId={}, ************ ",new Object[]{choiceId});
+        UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
+        return iOrdersService.finishOrder(choiceId,userInfo);
+    }
 
 
     //删除

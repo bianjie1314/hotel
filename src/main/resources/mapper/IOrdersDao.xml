@@ -11,6 +11,15 @@
         values(#{userId},#{orderCode},#{roomId},#{pay},#{status},#{createTime})
     </insert>
 
+    <select id="countOrderStatus" parameterType="int" resultType="map">
+      select t1.needPay,t2.needUse,t3.inUse,t4.hsReturn,t5.hsEvelate,t6.hsCancer from
+        (select count(*) as needPay from orders where user_id=#{userId} and status = 1) as t1,
+        (select count(*) as needUse from orders where user_id=#{userId} and status = 2) as t2,
+        (select count(*) as inUse from orders where user_id=#{userId} and (status = 3 or status = 5)) as t3,
+        (select count(*) as hsReturn from orders where user_id=#{userId} and status = 6) as t4,
+        (select count(*) as hsEvelate from orders where user_id=#{userId} and status = 7) as t5,
+        (select count(*) as hsCancer from orders where user_id=#{userId} and status = 4) as t6
+    </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from orders
@@ -66,8 +75,22 @@
     </update>
 
 
-    <select id="getById" parameterType="int" resultType="OrdersPojo">
-        select * from  orders where id=#{id}
+    <select id="getById" parameterType="int" resultMap="orderMap">
+        select o.*,
+        u.id as uId,u.username as uName,
+        r.id as rId,r.number as rNumber,r.money as money,h.name as hName
+        from  orders o
+        left join user u on o.user_id = u.id
+        left join room r on o.room_id = r.id
+        left join hotel h on r.hotel_id = h.id
+       where o.id=#{id}
+    </select>
+
+    <select id="countNeedPay" parameterType="HashMap" resultType="Double">
+        select sum(pay) from  orders where id in
+        <foreach collection="ids" open="(" separator="," item="id" close=")">
+            #{id}
+        </foreach>
     </select>
 
     <select id="selectOrdersList" parameterType="HashMap" resultType="OrdersPojo">
@@ -87,6 +110,12 @@
 
     <sql id="selectSql">
         <where>
+            <if test="statusRange != null">
+                and o.status in
+                <foreach collection="statusRange" open="(" separator="," item="statusR" close=")">
+                    #{statusR}
+                </foreach>
+            </if>
             <if test="hashId != null">
                 and h.user_id = #{hashId}
             </if>
@@ -119,7 +148,7 @@
     <select id="selectOrdersDetailList" parameterType="HashMap" resultMap="orderMap">
         select o.*,
         u.id as uId,u.username as uName,
-        r.id as rId,r.number as rNumber,h.name as hName
+        r.id as rId,r.number as rNumber,r.money as money,h.name as hName
         from  orders o
         left join user u on o.user_id = u.id
         left join room r on o.room_id = r.id
@@ -147,6 +176,7 @@
         <association property="room" javaType="RoomPojo">
             <result property="id" column="rId"/>
             <result property="number" column="rNumber"/>
+            <result property="money" column="money"/>
             <result property="hotel.name" column="hName"/>
         </association>
     </resultMap>

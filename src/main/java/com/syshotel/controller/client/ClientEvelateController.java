@@ -4,15 +4,20 @@ package com.syshotel.controller.client;
 import com.syshotel.common.CommonResult;
 import com.syshotel.common.PageBean;
 import com.syshotel.common.SearchVo;
+import com.syshotel.pojo.EvelatePojo;
+import com.syshotel.pojo.UserPojo;
 import com.syshotel.service.IEvelateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 评价接口
@@ -47,5 +52,14 @@ public class ClientEvelateController {
         model.addAttribute("searchVo",searchVo);
         model.addAttribute("pageBean",pageBean);
         return commonResult;
+    }
+
+    //新增
+    @RequestMapping(value="/addEvelate" )
+    @ResponseBody
+    public CommonResult addEvelate(@RequestBody EvelatePojo evelate, HttpServletRequest request){
+        logger.info("********** 进入 addEvelate 方法,evelate={}********** ",new Object[]{evelate});
+        UserPojo user = (UserPojo)request.getSession().getAttribute("clientUserInfo");
+        return iEvelateService.addBean(evelate,user);
     }
 }

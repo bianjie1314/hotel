@@ -20,7 +20,7 @@ public class OrdersPojo implements Serializable {
     private int roomId;
     //花费金额
     private double pay;
-    //状态，1待支付,2:预订中,3正常入住,4取消订单,5延长入住时间，6退房成功，7已评价
+    //状态，1待支付,2:预订中,3正常入住,4取消订单,5延长入住时间，6已退房，7已评价
     private int status;
     //创建时间
     private Date createTime;

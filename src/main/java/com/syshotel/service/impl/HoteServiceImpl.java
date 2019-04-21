@@ -2,7 +2,9 @@ package com.syshotel.service.impl;
 
 import com.syshotel.common.*;
 import com.syshotel.dao.IHotelDao;
+import com.syshotel.dao.IPictureDao;
 import com.syshotel.pojo.HotelPojo;
+import com.syshotel.pojo.PicturePojo;
 import com.syshotel.pojo.UserPojo;
 import com.syshotel.service.IHotelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,16 @@ public class HoteServiceImpl implements IHotelService {
 
     @Autowired
     IHotelDao hotelDao;
+    @Autowired
+    IPictureDao iPictureDao;
 
     @Override
-    public CommonResult addBean(HotelPojo hotelPojo) {
+    public CommonResult addBean(HotelPojo hotelPojo,UserPojo userInfo) {
+        if (userInfo == null || userInfo.getId() <= 0){
+            return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
+        }
+        hotelPojo.setUserId(userInfo.getId());
+        hotelPojo.setCreateTime(new Date());
         int result = hotelDao.addBean(hotelPojo);
         if (result <= 0){
             return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
@@ -51,13 +60,21 @@ public class HoteServiceImpl implements IHotelService {
         if (hotelPojo == null || hotelPojo.getId() <= 0){
             return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
         }
+        hotelPojo.setUpdateTime(new Date());
         hotelDao.updateBean(hotelPojo);
         return CommonResult.SUCCESS(MessageConstant.UPDATE_SUCCESS,null);
     }
 
     @Override
     public HotelPojo getById(int id) {
-        return hotelDao.getById(id);
+        HotelPojo hotelPojo = hotelDao.getById(id);
+        if (hotelPojo != null){
+            if (!StringUtils.isEmpty(hotelPojo.getPictureIds())){
+                List<PicturePojo> byIds = iPictureDao.getByIds(Arrays.asList(hotelPojo.getPictureIds().split(",")));
+                hotelPojo.setPictures(byIds);
+            }
+        }
+        return hotelPojo;
     }
 
     @Override

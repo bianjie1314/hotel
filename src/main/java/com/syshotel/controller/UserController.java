@@ -65,9 +65,13 @@ public class UserController {
     //更新自己
     @RequestMapping(value="/update" )
     @ResponseBody
-    public CommonResult updateUser(@RequestBody UserPojo user){
+    public CommonResult updateUser(@RequestBody UserPojo user, HttpServletRequest request){
         logger.info("********** 进入 updateUser 方法,user={}********** ",new Object[]{user});
-        return  iUserService.updateBean(user);
+        CommonResult commonResult = iUserService.updateBean(user);
+        if (commonResult.isResult()){
+            request.getSession().setAttribute("userInfo",commonResult.getData());
+        }
+        return commonResult;
     }
 
     //更新别人信息
@@ -75,7 +79,6 @@ public class UserController {
     @ResponseBody
     public CommonResult updateOtherUser(@RequestBody UserPojo user, HttpServletRequest request){
         logger.info("********** 进入 updateOtherUser 方法,user={}********** ",new Object[]{user});
-        // 更新缓存
         return iUserService.updateBean(user);
     }
 

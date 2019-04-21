@@ -13,9 +13,10 @@ public interface IHotelService {
     /**
      * 添加信息
      * @param hotelPojo
+     * @param userInfo
      * @return
      */
-    public CommonResult addBean(HotelPojo hotelPojo);
+    public CommonResult addBean(HotelPojo hotelPojo,UserPojo userInfo);
 
     /**
      * 通过id删除

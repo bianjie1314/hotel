@@ -54,4 +54,11 @@ public interface IEvelateDao {
      * @return
      */
     public int countEvelateList(Map<String,Object> queryMap);
+
+    /**
+     * 批量更新状态
+     * @param ids
+     * @param status
+     */
+    public void updateStatus(@Param("ids") List<String> ids,@Param("status") int status);
 }

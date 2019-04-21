@@ -7,21 +7,21 @@
         <selectKey order="AFTER" resultType="int" keyProperty="id">
             select last_insert_id()
         </selectKey>
-        insert into order_process_log(order_id,type,user_id,note,create_time)
-        values(#{order_id},#{type},#{user_id},#{note},#{createTime})
+        insert into order_process_log(order_id,status,do_user_id,note,create_time,start_time,end_time)
+        values(#{orderId},#{status},#{doUserId},#{note},#{createTime},#{startTime},#{endTime})
     </insert>
 
     <!-- 添加 -->
     <insert id="insertBatch" parameterType="list">
-        insert into order_process_log(order_id,type,user_id,note,create_time)
+        insert into order_process_log(order_id,status,do_user_id,note,create_time,start_time,end_time)
         values
         <foreach collection="beans" separator="," item="bean">
-            (#{bean.order_id},#{bean.type},#{bean.user_id},#{bean.note},#{bean.createTime})
+            (#{bean.orderId},#{bean.status},#{bean.doUserId},#{bean.note},#{bean.createTime},#{bean.startTime},#{bean.endTime})
         </foreach>
     </insert>
 
 
     <select id="selectByOrderId" parameterType="Integer" resultType="OrderProcessLogPojo">
-        select * from  order_process_log where order_id = #{orderId}
+        select * from  order_process_log where order_id = #{orderId} order by create_time asc
     </select>
 </mapper>

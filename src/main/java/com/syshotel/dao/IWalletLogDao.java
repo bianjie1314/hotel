@@ -42,4 +42,9 @@ public interface IWalletLogDao {
     public WalletLogPojo getById(int id);
 
 
+    /**
+     * 批量添加
+     * @param beans
+     */
+    public void insertBatch(@Param("beans") List<WalletLogPojo> beans);
 }

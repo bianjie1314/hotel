@@ -59,6 +59,69 @@
         where id=#{id}
     </update>
 
+    <update id="updateByMap" parameterType="map">
+        update room
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            <if test="ids != null">
+                id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <sql id="selectPageSql">
+        from  room r,hotel h
+        <where>
+            r.hotel_id = h.id and h.status = 1 and r.status = 1
+            <if test="userId != null">
+                and h.user_id = #{userId}
+            </if>
+            <if test="number != null">
+                and r.number like '%${number}%'
+            </if>
+            <if test="hotelId != null">
+                and r.hotel_id = #{hotelId}
+            </if>
+            <if test="hotelInfo != null">
+                and h.name  like '%${hotelInfo}%' or h.location like '%${hotelInfo}%' or r.number like '%${hotelInfo}%'
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and TO_DAYS(r.create_time) &gt;= TO_DAYS(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and TO_DAYS(r.create_time) &lt;= TO_DAYS(#{endTime})
+            </if>
+            <if test="updateTime != null">
+                and TO_DAYS(r.update_time) = TO_DAYS(#{updateTime})
+            </if>
+        </where>
+    </sql>
+
+    <select id="countPage"  parameterType="HashMap" resultType="Integer">
+        select count(*)
+        <include refid="selectPageSql"/>
+    </select>
+
+    <select id="selectPage" parameterType="HashMap" resultMap="roomMap">
+        select r.*,h.id as hId,h.name as hName
+        <include refid="selectPageSql"/>
+        order by r.create_time desc
+        <if test="start != null">
+            limit #{start},#{offset}
+        </if>
+    </select>
+
+
     <sql id="selectSql">
         from  room r  left join hotel h on r.hotel_id = h.id
         <where>

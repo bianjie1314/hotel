@@ -4,6 +4,7 @@ import com.syshotel.common.CommonResult;
 import com.syshotel.common.PageBean;
 import com.syshotel.common.SearchVo;
 import com.syshotel.pojo.EvelatePojo;
+import com.syshotel.pojo.UserPojo;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface IEvelateService {
      * @param evelatePojo
      * @return
      */
-    public CommonResult addBean(EvelatePojo evelatePojo);
+    public CommonResult addBean(EvelatePojo evelatePojo,UserPojo user);
 
     /**
      * 通过id删除
@@ -57,4 +58,11 @@ public interface IEvelateService {
      * @return
      */
     public CommonResult getEvelatePage(SearchVo searchVo, PageBean pageBean);
+    /**
+     * 审核评论
+     * @param choiceId
+     * @param status
+     * @return
+     */
+    public CommonResult auditEvelate(String choiceId, int status);
 }

@@ -95,7 +95,7 @@
 						<td>${status.index+1}</td>
 						<td>${hotel.name}</td>
 						<td>${hotel.user.username}</td>
-						<td>
+						<td class="td-status">
 							<c:choose>
 								<c:when test="${hotel.status == 1}">
 									<span class="label label-success radius">正常 </span>
@@ -105,7 +105,7 @@
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td class="td-status">
+						<td>
 								<span class="label label-primary radius">${hotel.location}</span>
 							</td>
 						<td><span

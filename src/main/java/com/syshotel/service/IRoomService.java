@@ -7,6 +7,7 @@ import com.syshotel.pojo.RoomPojo;
 import com.syshotel.pojo.UserPojo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IRoomService {
 
@@ -61,4 +62,10 @@ public interface IRoomService {
      */
     public RoomPojo getById(int id);
 
+    /**
+     * 更新
+     * @param map
+     * @return
+     */
+    public CommonResult updateByMap(Map<String,Object> map);
 }

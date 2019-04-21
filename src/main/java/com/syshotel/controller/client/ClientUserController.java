@@ -39,5 +39,19 @@ public class ClientUserController {
         return commonResult;
     }
 
+    //账户充值
+    @RequestMapping(value="/addWallet")
+    @ResponseBody
+    public CommonResult addWallet(double money, HttpServletRequest request){
+        logger.info("********** 进入 addWallet 方法,money={}********** ",new Object[]{money});
+        // 更新缓存
+        UserPojo userInfo = (UserPojo)request.getSession().getAttribute("clientUserInfo");
+        CommonResult commonResult = iUserService.addBalance(money, userInfo);
+        if (commonResult.isResult()){
+            userInfo.setBalance(userInfo.getBalance()+money);
+            request.getSession().setAttribute("clientUserInfo",userInfo);//更新账户余额缓存
+        }
+        return commonResult;
+    }
 
 }

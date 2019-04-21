@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 评价接口
  */
@@ -56,20 +58,20 @@ public class EvelateController {
         return iEvelateService.deleteByChoiceId(choiceId);
     }
 
+    //审核评论
+    @RequestMapping(value = "/auditEvelate", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult auditEvelate(String choiceId,int status,HttpServletRequest request) {
+        logger.info("************  进入  auditEvelate 方法,choiceId={},status={} ************ ",new Object[]{choiceId,status});
+        return iEvelateService.auditEvelate(choiceId,status);
+    }
+
     //更新
     @RequestMapping(value="/update",method=RequestMethod.PUT )
     @ResponseBody
     public CommonResult updateEvelate(EvelatePojo evelate){
         logger.info("********** 进入 updateEvelate 方法,evelate={}********** ",new Object[]{evelate});
         return iEvelateService.updateBean(evelate);
-    }
-
-    //新增
-    @RequestMapping(value="/add",method=RequestMethod.POST )
-    @ResponseBody
-    public CommonResult addEvelate(EvelatePojo evelate){
-        logger.info("********** 进入 addEvelate 方法,evelate={}********** ",new Object[]{evelate});
-        return iEvelateService.addBean(evelate);
     }
 
 }

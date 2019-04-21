@@ -39,7 +39,7 @@
 				<li class="dropDown dropDown_hover">
 					<a href="#" class="dropDown_A">${userInfo.username } <i class="Hui-iconfont">&#xe6d5;</i></a>
 					<ul class="dropDown-menu menu radius box-shadow">
-						<li><a href="javascript:;" onClick="alertShow('个人信息','${pageContext.request.contextPath }/user/getUserById/${userInfo.id }?view=admin/user/user-edit','1000','500')">个人信息</a></li>
+						<li><a href="javascript:;" onClick="alertShow('个人信息','${pageContext.request.contextPath }/user/getUserById/${userInfo.id }?view=admin/user/user-edit-self','1000','500')">个人信息</a></li>
 						<li><a href="javascript:;" onClick="alertShow('修改密码','${pageContext.request.contextPath }/user/getUserById/${userInfo.id }?view=admin/common/change-pwd','1000','500')">修改密码</a></li>
 						<li><a href="javascript:;" onclick="loginOut()">退出</a></li>
 				</ul>

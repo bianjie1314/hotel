@@ -45,7 +45,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>身份证号：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="输入手机号" name="identity">
+				<input type="text" class="input-text" value="" placeholder="输入身份证号" name="identity">
 			</div>
 		</div>
 		<div class="row cl">

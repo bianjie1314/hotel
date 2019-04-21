@@ -48,6 +48,7 @@
 					<option value="" selected="selected">全部分类</option>
 					<option value="1">充值</option>
 					<option value="2">付款</option>
+					<option value="3">退款</option>
 			</select>
 			</span>
 			</span> 日期范围： <input type="text"
@@ -101,7 +102,10 @@
 								<span class="label label-primary radius">充值 </span>
 								</c:when>
 								<c:when test="${wallet.type == 2}">
-								<span class="label label-warning radius">付款 </span>
+								<span class="label label-info radius">付款 </span>
+								</c:when>
+								<c:when test="${wallet.type == 3}">
+								 <span class="label label-warning radius">退款 </span>
 								</c:when>
 									<c:otherwise>
 									<span class="label label-default radius">无效交易</span>

@@ -116,12 +116,6 @@
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">详细内容：</label>
-			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" type="text/plain" style="width:100%;height:400px;" ></script>
-			</div>
-		</div>
-		<div class="row cl">
 			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
 				<button onClick="formSubmit();" class="btn btn-primary radius" type="button"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>
 <!--article_save_submit
@@ -727,7 +721,6 @@ $(function(){
                     $upload.text( '开始上传' );
 
                     stats = uploader.getStats();
-                    debugger;
                     if ( stats.successNum && !stats.uploadFailNum ) {
                         setState( 'finish' );
                         return;

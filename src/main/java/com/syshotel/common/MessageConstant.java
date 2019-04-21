@@ -34,14 +34,18 @@ public interface MessageConstant {
     String DELETE_FAILURE = "删除失败";
 
 
-
+    String BALANCE_NO_ENOUGH = "账户余额不足";
     String ORDER_NO_EXISTS = "订单不存在";
     String ORDER_NO_PAY = "订单未支付";
-    String ORDER_HAVE_DELIVERY = "订单已发货";
+    String ORDER_NO_WAIT_USE = "不是待入住订单";
+    String ORDER_NO_IN_PRE = "不是待支付订单";
+    String ORDER_NO_PAY_OR_WAIT_USE = "不是待支付或待入住订单";
     String ORDER_HAVE_CANCER = "订单已取消";
-    String ORDER_DELIVERY_SUCCESS = "发货成功";
-    String ORDER_NO_RETURN_APPLAY= "订单不是退货申请状态";
-    String ORDER_RETURN_APPLAY_SOLVE_SUCCESS = "退货申请处理成功";
+    String ORDER_INUSE_SUCCESS = "入住成功";
+    String ORDER_NO_IN_USE= "订单不是入住状态";
+    String ORDER_FINISH = "退房成功";
+    String ORDER_CANCER_SUCCESS = "成功取消订单";
+    String ORDER_CONTINUE_SUCCESS = "延长入住成功";
 
     String ROLE_EXISTS = "角色已经存在";
     String MENU_EXISTS = "菜单已经存在";
@@ -51,7 +55,7 @@ public interface MessageConstant {
     String FILE_UPLOAD_SUCCESS = "文件上传成功";
     String FILE_UPLOAD_FAILURE = "文件上传失败";
 
-    String PHONE_NO_EXISTS = "商品不存在";
+    String ROOM_NO_EXISTS = "房间不存在";
 
     String PAY_SUCCESS = "支付成功";
 }

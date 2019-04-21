@@ -52,11 +52,16 @@
 				<div class="col-lg-12">
 					<ul class="breadcrumb">
 						<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">我的订单</a></li>
-						<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/orderEvelate">我的评价</a></li>
+						<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/inUse">已入住订单</a></li>
 					</ul>
 				</div>
 			</div>
 			<div  class="row" id="cartPhone">
+			</div>
+			<div class="row">
+				<div class="pricedetails">
+
+				</div>
 			</div>
 		</div>
 	</div>
@@ -69,70 +74,77 @@
 <script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/newJs/curd.js"></script>
 <script>
 
-    //未支付订单
+    //完成
     $(document).ready(function(){
-        $.ajax({
-            type : 'get',
-            url : "${pageContext.request.contextPath }/client/evelate/getEvelatePage",
-            dataType : 'json',
-            data:{
-                "status":"2",
-            },
-            success : function(data) {
-                if (data.result) {
-                    var pageViewVo = data.data;//PageViewVo
-                    var totalPrice = 0;
-                    if (pageViewVo.size > 0 && pageViewVo.data != null){
-                        for (var i = 0; i < pageViewVo.data.length; i++ ){
-                            var order  = pageViewVo.data[i];
+		$.ajax({
+			type : 'get',
+			url : "${pageContext.request.contextPath }/client/order/getOrderList",
+			dataType : 'json',
+			data:{
+				"category":"3,5",
+			},
+			success : function(data) {
+				if (data.result) {
+					var pageViewVo = data.data;//PageViewVo
+					var totalPrice = 0;
+					if (pageViewVo.size > 0 && pageViewVo.data != null){
+						for (var i = 0; i < pageViewVo.data.length; i++ ){
+							var order  = pageViewVo.data[i];
                             totalPrice += order.pay;
                             var numName = "num"+i;
-                            var statusLabel = "<div style='color: blue'>已评价</div>";
 
                             var pc = '${pageContext.request.contextPath }/clientlib/images/r'+((i+1)%8+1)+'.jpg';
                             if (order.room.pictures != null){
                                 pc = "${pageContext.request.contextPath }"+order.room.pictures[0].pathUrl;
                             }
+
+                            var statusLabel = "";
+                            if (order.status == 3){
+                                statusLabel = "<div style='color: red'>正常入住</div>";
+                            }else if(order.status == 5){
+                                statusLabel = "<div style='color: blue'>入住加长</div>";
+                            }
                             var orderView =
                                 '<div class="row">'+
 									'<div class="product well">'+
-										'<div class="col-md-3">'+
-											'<div class="image">'+
+										'<div class="col-md-5">'+
+											'<div class="image" style="width:400px;height:200px" >'+
 												'<a href="${pageContext.request.contextPath }/client/room/getRoomById/'+order.room.id+'?view=/client/roomInfo">'+
-													'<img src="'+pc+'"   style="width:200px;height:320px"/>'+
+													'<img src="'+pc+'" style="width:280px;height:200px"/>'+
 												'</a>'+
-                                			'</div>'+
-                                		'</div>'+
-                                		'<div class="col-md-9">'+
+											'</div>'+
+										'</div>'+
+										'<div class="col-md-7">'+
 											'<div class="caption">'+
-												'<div class="name"><h3><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+order.room.id+'?view=/client/roomInfo">单号: '+order.orderCode+'</a></h3></div>'+
+												'<div class="name"><h3><a href="${pageContext.request.contextPath }/client/getRoomById/'+order.room.id+'?view=/client/roomInfo">单号: '+order.orderCode+'</a></h3></div>'+
 												'<div class="info">'+
 													'<ul>'+
 														'<li>时间: '+timeStamp2String(order.createTime)+'</li>'+
-														'<li>房间: '+order.room.number+'房</li>'+
-														'<li>已支付: '+order.pay+'元</li>'+
-														'<li>评论内容: '+order.content+'</li>'+
+														'<li>酒店: '+order.room.hotel.name+'</li>'+
+														'<li>房号: '+order.room.number+'</li>'+
 													'</ul>'+
 												'</div>'+
-											'</div>'+
-										'</div>'+
-                                		'<div class="clear"></div>'+
-                                	'</div>'+
+												'<div class="price">已付金额:￥'+order.pay+'</div>'+
+                                			'</div>'+statusLabel+
+                                			'<a href="${pageContext.request.contextPath }/client/order/getOrderById/'+order.id+'?view=/client/order/orderContinue" class="btn btn-warning">延长入住</a>'+
+                                			'</div>'+
+										'<div class="clear"></div>'+
+									'</div>'+
                                 '</div>';
                             $("#cartPhone").append(orderView);
-                        }
-                    }else {
+						}
+					}else {
                         $("#cartPhone").append("订单空");
                     }
-                } else {
-                    layer.msg(data.msg, {icon : 5,time : 1000});
-                }
-            },
-            error : function(data) {
-                console.log(data.msg);
-            }
-        });
-    });
+				} else {
+					layer.msg(data.msg, {icon : 5,time : 1000});
+				}
+			},
+			error : function(data) {
+				console.log(data.msg);
+			}
+		});
+	});
 
 
 </script>

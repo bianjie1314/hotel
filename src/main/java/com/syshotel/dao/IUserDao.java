@@ -86,4 +86,10 @@ public interface IUserDao {
      * @return
      */
     public UserPojo getByMobileAndUsername(@Param("username") String username, @Param("mobile") String mobile);
+
+    /**
+     * 更新用户账户余额
+     * @param user
+     */
+    public void updateMoney(UserPojo user);
 }

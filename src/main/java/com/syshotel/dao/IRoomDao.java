@@ -1,6 +1,7 @@
 package com.syshotel.dao;
 
 
+import com.syshotel.common.CommonResult;
 import com.syshotel.pojo.RoomPojo;
 import org.apache.ibatis.annotations.Param;
 
@@ -50,10 +51,31 @@ public interface IRoomDao {
     public int countRoomList(Map<String, Object> paramMap);
 
     /**
+     * 查询满足条件的信息
+     * @param paramMap
+     * @return
+     */
+    public List<RoomPojo> selectPage(Map<String, Object> paramMap);
+
+
+    /**
+     * 统计满足条件的信息
+     * @param paramMap
+     * @return
+     */
+    public int countPage(Map<String, Object> paramMap);
+
+    /**
      * 通过id获取
      * @param id
      * @return
      */
     public RoomPojo getById(int id);
 
+    /**
+     * 通过
+     * @param map
+     * @return
+     */
+    public void updateByMap(Map<String,Object> map);
 }

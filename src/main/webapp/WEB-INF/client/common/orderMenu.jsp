@@ -9,7 +9,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">
@@ -49,12 +49,12 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 						<div class="dropdown-menu">
 							<div class="dropdown-inner">
 								<ul class="list-unstyled" id='+rowId+' style="text-align: center">
-									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">待支付(<span style="color: red">1</span>)</a></li>
-									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">待入住(<span style="color: red">0</span>)</a></li>
-									<li><a href="javascript:;" onclick="searchPhone()">入住中(<span style="color: red">0</span>)</a></li>
-									<li><a href="javascript:;" onclick="searchPhone()">已取消(<span style="color: red">0</span>)</a></li>
-									<li><a href="javascript:;" onclick="searchPhone()">已退房(<span style="color: red">0</span>)</a></li>
-									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/orderEvelate">已评价(<span style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">待支付(<span id="needPay" style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/needUse" >待入住(<span id="needUse" style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/inUse" >入住中(<span id="inUse" style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/orderReturn" >已退房(<span id="hsReturn" style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/orderEvelate">已评价(<span id="hsEvelate" style="color: red">0</span>)</a></li>
+									<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/orderCancer">已取消(<span id="hsCancer" style="color: red">0</span>)</a></li>
 								</ul>
 							</div>
 						</div>
@@ -64,5 +64,30 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 		</div>
 	</nav>
 </body>
+<script>
+    $(document).ready(function() {
+        //获取手机类型列表
+        $.ajax({
+            type : 'get',
+            url : "${pageContext.request.contextPath }/client/order/countOrderStatus",
+            dataType : 'json',
+            success : function(data) {
+                if (data.result) {
+                    $("#needPay").text(data.data.needPay);
+                    $("#needUse").text(data.data.needUse);
+                    $("#inUse").text(data.data.inUse);
+                    $("#hsReturn").text(data.data.hsReturn);
+                    $("#hsEvelate").text(data.data.hsEvelate);
+                    $("#hsCancer").text(data.data.hsCancer);
 
+                } else {
+                    layer.msg(data.msg, {icon : 5,time : 1000});
+                }
+            },
+            error : function(data) {
+                console.log(data.msg);
+            }
+        });
+    });
+</script>
 </html>

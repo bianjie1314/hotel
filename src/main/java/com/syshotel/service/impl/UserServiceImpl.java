@@ -2,12 +2,15 @@ package com.syshotel.service.impl;
 
 import com.syshotel.common.*;
 import com.syshotel.dao.IUserDao;
+import com.syshotel.dao.IWalletLogDao;
 import com.syshotel.pojo.UserPojo;
+import com.syshotel.pojo.WalletLogPojo;
 import com.syshotel.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -15,6 +18,8 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     IUserDao iUserDao;
+    @Autowired
+    IWalletLogDao iWalletLogDao;
 
     @Override
     public CommonResult addBean(UserPojo userPojo) {
@@ -154,6 +159,50 @@ public class UserServiceImpl implements IUserService {
         updateUs.setId(us.getId());
         updateUs.setPassword(newpassword);
         iUserDao.updateBean(updateUs);
+        return CommonResult.SUCCESS(MessageConstant.MODIFY_SUCCESS);
+    }
+
+    @Override
+    public CommonResult batchUpdateMoney(List<UserPojo> userPojos) {
+        if (userPojos == null || userPojos.size() == 0){
+            return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
+        }
+        for (UserPojo user:userPojos) {
+            iUserDao.updateMoney(user);
+        }
+
+        return CommonResult.SUCCESS(MessageConstant.MODIFY_SUCCESS);
+    }
+
+    @Override
+    public CommonResult updateMoney(UserPojo userPojos) {
+        if (userPojos == null || userPojos.getId() <= 0){
+            return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
+        }
+        iUserDao.updateMoney(userPojos);
+        return CommonResult.SUCCESS(MessageConstant.MODIFY_SUCCESS);
+    }
+
+    @Transactional
+    @Override
+    public CommonResult addBalance(double money, UserPojo userInfo) {
+        if (userInfo == null || userInfo.getId() <= 0){
+            return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
+        }
+        UserPojo us = new UserPojo();
+        us.setBalance(money);
+        us.setId(userInfo.getId());
+        iUserDao.updateMoney(us);
+
+
+        WalletLogPojo walletLogPojo = new WalletLogPojo();
+        walletLogPojo.setType(Constant.WALLET_ADD_1);
+        walletLogPojo.setMoney(money);
+        walletLogPojo.setCreateTime(new Date());
+        walletLogPojo.setUserId(userInfo.getId());
+        walletLogPojo.setNote("账户充值");
+        iWalletLogDao.addBean(walletLogPojo);
+
         return CommonResult.SUCCESS(MessageConstant.MODIFY_SUCCESS);
     }
 }

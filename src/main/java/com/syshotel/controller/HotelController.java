@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -77,20 +74,40 @@ public class HotelController {
     }
 
 
+    //根据id获取
+    @RequestMapping(value="/getHotelById/{hotelId}",method=RequestMethod.GET )
+    public String getHotelById(@PathVariable("hotelId") int hotelId,String view,Model model){
+        logger.info("********** 进入 getHotelById 方法,hotelId={}********** ",new Object[]{hotelId});
+        model.addAttribute("hotelInfo",iHotelService.getById(hotelId));
+        return view;
+    }
+
     //更新
     @RequestMapping(value="/update")
     @ResponseBody
-    public CommonResult updateHotel(HotelPojo hotelPojo){
+    public CommonResult updateHotel(@RequestBody HotelPojo hotelPojo, HttpServletRequest request){
         logger.info("********** 进入 updateHotel 方法,hotelPojo={}********** ",new Object[]{hotelPojo});
+        UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
+        Object attribute = request.getSession().getAttribute("pic" + userInfo.getId());
+        if (attribute != null){
+            hotelPojo.setPictureIds((String)attribute);
+        }
+        request.getSession().removeAttribute("pic" + userInfo.getId());
         return iHotelService.updateBean(hotelPojo);
     }
 
     //新增
-    @RequestMapping(value="/add",method=RequestMethod.POST )
+    @RequestMapping(value="/add" )
     @ResponseBody
-    public CommonResult addHotel(HotelPojo hotelPojo){
+    public CommonResult addHotel(@RequestBody HotelPojo hotelPojo, HttpServletRequest request){
         logger.info("********** 进入 addHotel 方法,hotelPojo={}********** ",new Object[]{hotelPojo});
-        return iHotelService.addBean(hotelPojo);
+        UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
+        Object attribute = request.getSession().getAttribute("pic" + userInfo.getId());
+        if (attribute != null){
+            hotelPojo.setPictureIds((String)attribute);
+        }
+        request.getSession().removeAttribute("pic" + userInfo.getId());
+        return iHotelService.addBean(hotelPojo,userInfo);
     }
 
 }

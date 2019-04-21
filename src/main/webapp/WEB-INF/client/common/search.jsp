@@ -9,7 +9,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">

@@ -1,34 +1,57 @@
 package com.syshotel.service.impl;
 
-import com.syshotel.common.CommonResult;
-import com.syshotel.common.MessageConstant;
-import com.syshotel.common.PageBean;
-import com.syshotel.common.SearchVo;
+import com.syshotel.common.*;
 import com.syshotel.dao.IEvelateDao;
+import com.syshotel.dao.IOrderProcessLogDao;
+import com.syshotel.dao.IOrdersDao;
 import com.syshotel.pojo.EvelatePojo;
+import com.syshotel.pojo.OrderProcessLogPojo;
+import com.syshotel.pojo.OrdersPojo;
+import com.syshotel.pojo.UserPojo;
 import com.syshotel.service.IEvelateService;
 import com.syshotel.service.IRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.transaction.Transactional;
+import java.util.*;
 
 @Service
 public class EvelateServiceImpl implements IEvelateService {
 
     @Autowired
     IEvelateDao iEvelateDao;
+    @Autowired
+    IOrdersDao iOrdersDao;
+    @Autowired
+    IOrderProcessLogDao orderProcessLogDao;
 
+    @Transactional
     @Override
-    public CommonResult addBean(EvelatePojo evelatePojo) {
-        int result =  iEvelateDao.addBean(evelatePojo);
-        if (result <= 0){
+    public CommonResult addBean(EvelatePojo evelatePojo,UserPojo user) {
+        if (evelatePojo.getOrderId() <= 0){
             return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
         }
+        evelatePojo.setCreateTime(new Date());
+        evelatePojo.setStatus(1);
+        evelatePojo.setUserId(user.getId());
+        int result =  iEvelateDao.addBean(evelatePojo);
+
+        //更新订单状态
+        OrdersPojo ordersPojo = new OrdersPojo();
+        ordersPojo.setUpdateTime(new Date());
+        ordersPojo.setStatus(Constant.ORDER_EVELATE);
+        ordersPojo.setId(evelatePojo.getOrderId());
+        iOrdersDao.updateBean(ordersPojo);
+        //添加记录
+        OrderProcessLogPojo orderProcessLogPojo = new OrderProcessLogPojo();
+        orderProcessLogPojo.setCreateTime(new Date());
+        orderProcessLogPojo.setOrderId(evelatePojo.getOrderId());
+        orderProcessLogPojo.setStatus(Constant.ORDER_EVELATE);
+        orderProcessLogPojo.setDoUserId(user.getId());
+        orderProcessLogDao.addBean(orderProcessLogPojo);
+
         return CommonResult.SUCCESS(MessageConstant.ADD_SUCCESS,result);
     }
 
@@ -98,6 +121,16 @@ public class EvelateServiceImpl implements IEvelateService {
         return paramMap;
     }
 
+    @Transactional
+    @Override
+    public CommonResult auditEvelate(String ids, int status) {
+        if (StringUtils.isEmpty(ids) || status <= 0){
+            return CommonResult.ERROR(MessageConstant.PARAM_ERROR);
+        }
+        String[] index = (ids.substring(ids.indexOf(',') + 1)).split(",");
+        iEvelateDao.updateStatus(Arrays.asList(index),status);
+        return CommonResult.SUCCESS(MessageConstant.UPDATE_SUCCESS,null);
+    }
 
     @Override
     public CommonResult getEvelatePage(SearchVo searchVo, PageBean pageBean) {

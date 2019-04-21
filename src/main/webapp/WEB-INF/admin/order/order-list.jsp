@@ -49,7 +49,7 @@
 					<option value="1">待支付</option>
 					<option value="2">预定中</option>
 					<option value="3">已入住</option>
-					<option value="4">取消订单</option>
+					<option value="4">订单取消</option>
 					<option value="5">延长入住时间</option>
 					<option value="6">退房成功</option>
 					<option value="7">已评价</option>
@@ -71,14 +71,10 @@
 			<span class="l">
 				<c:if test="${userInfo.roleId == 1}">
 					<a href="javascript:;" onclick="return deleteChoice('${pageContext.request.contextPath }/order/deleteShopByChoice')" class="btn btn-danger  radius"><i class="Hui-iconfont">&#xe6e2;</i>批量删除</a>
-					<a href="javascript:;" onclick="return returnOrder('${pageContext.request.contextPath }/order/returnOrder',10)" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe6e1;</i> 订单作废</a>
 				</c:if>
-					<a href="javascript:;" onclick="return deliveryOrder('${pageContext.request.contextPath }/order/delieveryOrder')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe669;</i> 用户入住</a>
-					<a href="javascript:;" onclick="return deliveryOrder('${pageContext.request.contextPath }/order/delieveryOrder')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe669;</i> 延长入住时间</a>
-					<a href="javascript:;" onclick="return returnOrder('${pageContext.request.contextPath }/order/returnOrder',9)" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe6e1;</i> 同意取消订单</a>
-					<a href="javascript:;" onclick="return returnOrder('${pageContext.request.contextPath }/order/returnOrder',10)" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe6dd;</i> 拒绝取消</a>
-					<a href="javascript:;" onclick="return returnOrder('${pageContext.request.contextPath }/order/returnOrder',10)" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe66b;</i> 取消订单</a>
-					<a href="javascript:;" onclick="return returnOrder('${pageContext.request.contextPath }/order/returnOrder',10)" class="btn btn-info radius"><i class="Hui-iconfont">&#xe6e1;</i> 退房完成</a>
+					<a href="javascript:;" onclick="return doOrder('${pageContext.request.contextPath }/order/userEnterOrder','确认入住吗?')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe62c;</i> 用户入住</a>
+					<a href="javascript:;" onclick="return doOrder('${pageContext.request.contextPath }/order/cancerOrder','确认取消订单吗?')" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe66b;</i> 取消订单</a>
+					<a href="javascript:;" onclick="return doOrder('${pageContext.request.contextPath }/order/finishOrder','确认已办理退房吗?')" class="btn btn-info radius"><i class="Hui-iconfont">&#xe6e1;</i> 退房完成</a>
 				</span> <span class="r"><strong></strong>
 			</span>
 		</div>
@@ -114,16 +110,16 @@
 						<td>
 							<c:choose>
 								<c:when test="${order.status == 1}">
-									<span class="label label-danger radius">预定中 </span>
+									<span class="label label-warning radius">预定中 </span>
 								</c:when>
 								<c:when test="${order.status == 2}">
-									<span class="label label-danger radius">预定中 </span>
+									<span class="label label-primary radius">待入住 </span>
 								</c:when>
 								<c:when test="${order.status == 3}">
-								<span class="label label-warning radius">已入住 </span>
+								<span class="label label-default radius">已入住 </span>
 								</c:when>
 								<c:when test="${order.status == 4}">
-									<span class="label label-warning radius">取消订单 </span>
+									<span class="label label-danger radius">订单取消 </span>
 								</c:when>
 								<c:when test="${order.status == 5}">
 									<span class="label label-success radius">延长入住时间 </span>
@@ -145,12 +141,14 @@
 							class="label label-success radius"><fmt:formatDate value="${order.updateTime}" pattern="yyyy年MM月dd日HH点mm分ss秒" /></span></td>
 						<td class="f-14 td-manage">
 							<a style="text-decoration: none" class="ml-5"
-							   onClick="edit('更多信息','${pageContext.request.contextPath }/order/getShopById/${order.id}?view=admin/shop/shop-add','10001')"
+							   onClick="alertShow('订单${order.orderCode}流程信息','${pageContext.request.contextPath }/orderLog/getOrderProcess/${order.id}','800','800')"
 							   href="javascript:;" title="更多信息"><i class="Hui-iconfont">&#xe717;</i></a>
+							<%--<c:if test="${order.status == 3 || order.status ==5}">
+								<a style="text-decoration: none" class="ml-5"
+								   onClick="alertShow('订单${order.orderCode}延长入住','${pageContext.request.contextPath }/order/getOrderById/${order.id}?view=/admin/order/order-continue','400','300')"
+								   href="javascript:;" title="延长入住"><i class="Hui-iconfont">&#xe603;</i></a>
+							</c:if>--%>
 							<c:if test="${userInfo.roleId == 1}">
-							 <a style="text-decoration: none" class="ml-5"
-							onClick="edit('修改信息','${pageContext.request.contextPath }/order/getShopById/${order.id}?view=admin/shop/shop-add','10001')"
-							href="javascript:;" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
 							<a style="text-decoration: none" class="ml-5"
 							onClick="deleteOne(this,'${pageContext.request.contextPath }/order/delete/${order.id}')" href="javascript:;"
 							title="删除信息"><i class="Hui-iconfont">&#xe6e2;</i></a>
@@ -183,8 +181,7 @@
 
 
 
-        /** 发货* */
-        function deliveryOrder(targetUrl) {
+        function doOrder(targetUrl,message) {
             var checkbox = document.getElementsByName("choice");
             var isSelect;
             var dataStr = "";
@@ -201,7 +198,7 @@
                 return false;
             }
 
-            layer.confirm('确认发货吗？', function(index) {
+            layer.confirm(message, function(index) {
                 $.ajax({
                     type : 'get',
                     url : targetUrl,
@@ -211,54 +208,10 @@
                     },
                     success : function(data) {
                         if (data.result) {
-                            //TODO 刷新
-                            window.location.replace( window.location.href);
-                        } else {
                             layer.msg(data.msg, {
-                                icon : 5,
+                                icon : 1,
                                 time : 2000
                             });
-                        }
-
-                    },
-                    error : function(data) {
-                        console.log(data.msg);
-                    }
-                });
-
-            });
-        }
-
-        /** 退货* */
-        function returnOrder(targetUrl,status) {
-            var checkbox = document.getElementsByName("choice");
-            var isSelect;
-            var dataStr = "";
-            var checkObj = new Array();
-            for (var i = 0; i < checkbox.length; i++) {
-                if (checkbox[i].checked) {
-                    isSelect = true;
-                    dataStr += "," + checkbox[i].value;
-                    checkObj.push(checkbox[i]);
-                }
-            }
-            if (!isSelect) {
-                layer.alert("请选择要操作的数据");
-                return false;
-            }
-
-            layer.confirm('确认处理退货请求吗？', function(index) {
-                $.ajax({
-                    type : 'get',
-                    url : targetUrl,
-                    dataType : 'json',
-                    data : {
-                        "choiceId" : dataStr,
-                        "status" : status
-                    },
-                    success : function(data) {
-                        if (data.result) {
-                            //TODO 刷新
                             window.location.replace( window.location.href);
                         } else {
                             layer.msg(data.msg, {

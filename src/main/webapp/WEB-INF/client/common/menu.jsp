@@ -9,7 +9,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">
@@ -60,7 +60,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 
 <script>
     $(document).ready(function() {
-        //获取手机类型列表
+        //获取酒店列表
         $.ajax({
             type : 'get',
             url : "${pageContext.request.contextPath }/client/hotel/getHotelPage",
@@ -82,7 +82,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
                                 var ulStr = '<ul class="list-unstyled" id='+rowId+'></ul>';
                                 $("#menuContainer").append(ulStr);
                             }
-                            var liStr ='<li><a href="javascript:;" onclick="searchPhone(\''+pageViewVo[i].name+'\')">'+pageViewVo[i].name+'</a></li>';
+                            var liStr ='<li><a href="javascript:;" onclick="searchHotel(\''+pageViewVo[i].name+'\')">'+pageViewVo[i].name+'</a></li>';
                             $("#"+rowId).append(liStr);
                         }
                     }

@@ -160,13 +160,14 @@ pageEncoding="UTF-8" isELIgnored="false" %>
                                     '</span>'+
                                 '</div>'+
                                 '<div class="caption">'+
-                                '<div class="name"><h3><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo">'+room.number+'房￥'+room.money+'</a></h3></div>'+
+                                '<div class="name"><h3><a href="${pageContext.request.contextPath }/client/room/getRoomById/'+room.id+'?view=/client/roomInfo">'+room.number+'房￥'+room.money+'/天</a></h3></div>'+
+/*
                                 '<div class="rating"><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star"></span><span class="glyphicon glyphicon-star-empty"></span></div>'+
+*/
                                 '</div>'+
                                 '</div>'+
                                 '</div>';
                             $("#"+rowId).append(productView);
-
                         }
                     }
                 } else {

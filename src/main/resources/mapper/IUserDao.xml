@@ -42,8 +42,8 @@
             <if test="roleId > 0">
                 role_id = #{roleId},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime}
+            <if test="updateTime != null">
+                update_time = #{updateTime}
             </if>
         </set>
         where id=#{id}
@@ -93,4 +93,11 @@
         from  user where mobile = #{mobile} and password = #{password}
     </select>
 
+    <select id="getAllParamById" parameterType="int" resultType="UserPojo">
+        select * from user where id=#{id}
+    </select>
+
+    <update id="updateMoney" parameterType="UserPojo">
+        update user set balance = balance + #{balance},update_time = #{updateTime} where id = #{id}
+    </update>
 </mapper>

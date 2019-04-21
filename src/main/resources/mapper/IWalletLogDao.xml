@@ -11,6 +11,15 @@
         values(#{userId},#{orderId},#{money},#{type},#{note},#{createTime})
     </insert>
 
+    <!-- 添加 -->
+    <insert id="insertBatch" parameterType="list">
+        insert into wallet_log(user_id,order_id,money,type,note,create_time)
+        values
+        <foreach collection="beans" separator="," item="bean">
+            (#{bean.userId},#{bean.orderId},#{bean.money},#{bean.type},#{bean.note},#{bean.createTime})
+        </foreach>
+    </insert>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from wallet_log
         where id = #{id}

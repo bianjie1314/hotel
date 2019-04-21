@@ -3,18 +3,14 @@ package com.syshotel.common;
 public interface Constant {
 
 
-    //订单状态，1:未支付，2:待发货,3:待收获,4:已签收,5:已评价,6:取消订单,7:订单完成,8:退货申请，9:退货同意,10:退货拒绝,11:退货完成
+    //订单状态，1待支付,2:预订中,3正常入住,4取消订单,5延长入住时间，6已退房，7已评价
     int ORDER_PAY_DOING = 1;
-    int ORDER_DELIVERY = 2;
-    int ORDER_GAINS = 3;
-    int ORDER_PEN = 4;
-    int ORDER_EVELATE = 5;
-    int ORDER_CANCER = 6;
-    int ORDER_FINISH = 7;
-    int ORDER_RETURN_APPLAY = 8;
-    int ORDER_RETURN_AGREE = 9;
-    int ORDER_RETURN_REFUSE = 10;
-    int ORDER_RETURN_FINISH = 11;
+    int ORDER_IN_PRE = 2;
+    int ORDER_IN_USE = 3;
+    int ORDER_CANCER = 4;
+    int ORDER_CONTINUE_USE = 5;
+    int ORDER_FINISH = 6;
+    int ORDER_EVELATE = 7;
 
 
     int INFO_SHOW = 1; //显示信息获取的
@@ -30,4 +26,14 @@ public interface Constant {
 
     int SHOP_STATUS_NORMAL = 1;//店铺正常
     int SHOP_STATUS_ENABEL = 2;//店铺下架
+
+
+    int ROOM_STATUS_NORMAL = 1;//正常
+    int ROOM_STATUS_USE = 2;//使用中
+    int ROOM_STATUS_ENABEL = 3;//下线
+
+
+    int WALLET_ADD_1 = 1;//充值
+    int WALLET_PAY_2 = 2;//付款
+    int WALLET_CANCER_3 = 3;//退款
 }

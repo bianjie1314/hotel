@@ -11,7 +11,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">
@@ -63,6 +63,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
 								<div class="dropdown-menu">
 									<div class="dropdown-inner">
 										<ul class="list-unstyled">
+											<a href="${pageContext.request.contextPath }/dispatcher?view=client/add_wallet" style="color: #ed9c28"><span class="glyphicon glyphicon-plane"></span> 充值</a>
 											<a href="${pageContext.request.contextPath }/dispatcher?view=client/userInfo" style="color: #ed9c28"><span class="glyphicon glyphicon-user"></span> 个人信息</a>
 											<a href="${pageContext.request.contextPath }/dispatcher?view=client/changePwd" style="color: #ed9c28"><span class="glyphicon glyphicon-edit"></span> 修改密码</a>
 										</ul>
@@ -90,7 +91,7 @@ pageEncoding="UTF-8" isELIgnored="false" %>
         layer.confirm('确认要退出登录吗？', function(index) {
             $.ajax({
                 type : 'get',
-                url : "${pageContext.request.contextPath }/exit",
+                url : "${pageContext.request.contextPath }/clientExit",
                 dataType : 'json',
                 success : function(data) {
                     if (data.result) {

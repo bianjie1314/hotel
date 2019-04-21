@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>酒店预订登陆</title>
+    <title>账户充值</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css"  type="text/css">
@@ -53,26 +53,17 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<ul class="breadcrumb">
-						<li>登陆</li>
+						<li>账户充值</li>
 					</ul>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<div class="heading"><h2 style="color: #ed9c28">登陆</h2></div>
-					<form name="form1" id="ff1" action="">
+					<form name="form2" id="ff2">
 						<div class="form-group">
-							<input type="text" class="form-control" placeholder="手机号 :" name="loginMobile" id="loginMobile" required>
+							<input type="number" class="form-control" placeholder="充值金额 :" name="money" id="money" required>
 						</div>
-						<div class="form-group">
-							<input type="password" class="form-control" placeholder="密码 :" name="loginPassword" id="loginPassword" required>
-						</div>
-						<div class="form-group">
-								<input class="input-text size-L" type="text" placeholder="验证码" name="vcode" onblur="if(this.value==''){this.value='验证码:'}" onclick="if(this.value=='验证码:'){this.value='';}" value="验证码:" style="width:150px;">
-								<img src="${pageContext.request.contextPath }/verify-code" id="vcode_img"> <a id="changeCode" href="javascript:;">看不清，换一张</a>
-						</div>
-						<button type="button" id='loginBtn' class="btn btn-1" name="login">登陆</button>
-						<a href="${pageContext.request.contextPath }/dispatcher?view=client/forgetPwd">忘记密码 ?</a>
+						<button type="button" id="regBtn" onclick="formSubmit()" class="btn btn-1">确认充值</button>
 					</form>
 				</div>
 			</div>
@@ -85,50 +76,39 @@
 <script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/pageResources/newJs/curd.js"></script>
 <script>
-    //刷新验证码,需要加上标识,防止缓存不刷新
-    $('#changeCode').click(function(){
-        $('#vcode_img').attr("src","${pageContext.request.contextPath }/verify-code?"+Math.random());
-    });
 
-    //确认登陆
-    $('#loginBtn').click(function(){
-        if ($("[name='loginMobile']").val() == null || $("[name='loginMobile']").val() == ""){
-            layer.msg("请输入账号",{icon:5,time:3000});
+    //确认添加
+    function formSubmit(){
+        if ($("[name='money']").val() == null || $("[name='money']").val() == ""){
+            layer.msg("请输入充值金额",{icon:5,time:3000});
             return;
-        } else if($("[name='loginPassword']").val() == null || $("[name='loginPassword']").val() == ""){
-            layer.msg("请输入密码",{icon:5,time:3000});
-            return;
-        }else if($("[name='vcode']").val() == null || $("[name='vcode']").val() == ""){
-            layer.msg("请输入验证码",{icon:5,time:3000});
-            return;
+        }else {
+            layer.confirm('确认充值吗？',function(index){
+                $.ajax({
+                    type: 'GET',
+                    url: '${pageContext.request.contextPath }/client/user/addWallet',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    data:{
+                        "money":$("[name='money']").val()
+                    },
+                    success: function(data){
+                        if (data.result) {
+                            layer.msg("充值成功",{icon:1,time:2000});
+                            setTimeout(function(){
+                                parent.location.reload();
+                            }, 1200);//1.2秒后返回上一页
+                        } else {
+                            layer.msg(data.msg,{icon:5,time:3000});
+                        }
+                    },
+                    error:function(data) {
+                        console.log(data.msg);
+                    }
+                });
+            });
         }
-        $.ajax({
-            type: 'get',
-            url: '${pageContext.request.contextPath }/login',
-            dataType: 'json',
-            data:{
-                "mobile":$("[name='loginMobile']").val(),
-                "password":$("[name='loginPassword']").val(),
-                "vcode":$("[name='vcode']").val(),
-				"type":"common"
-            },
-            success: function(data){
-                if(data.result){
-                    layer.msg(data.msg,{icon:1,time:1000});
-                    setTimeout(function(){
-                        location.href='${pageContext.request.contextPath }/dispatcher?view=/client/index';
-                    }, 1000);//1秒后刷新界面
-                }else {
-                    layer.msg(data.msg,{icon:5,time:1000});
-                    //修改验证码
-                    $('#vcode_img').attr("src","${pageContext.request.contextPath }/verify-code?"+Math.random());
-                }
-            },
-            error:function(data) {
-                console.log(data.msg);
-            },
-        });
-    });
+    }
 
 </script>
 </html>

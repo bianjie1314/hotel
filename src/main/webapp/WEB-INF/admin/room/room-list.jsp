@@ -141,10 +141,7 @@
 						<td class="td-status"><span
 							class="label label-success radius"><fmt:formatDate value="${room.updateTime}" pattern="yyyy年MM月dd日HH点mm分ss秒" /></span></td>
 						<td class="f-14 td-manage">
-						<a style="text-decoration: none"
-							onClick="alertShow('详细信息','${pageContext.request.contextPath }/room/getRoomById/${room.id}?view=admin/room/room-info','1000','900')" href="javascript:;"
-							title="详细信息"><i class="Hui-iconfont">&#xe111;</i></a>
-							 <a style="text-decoration: none" class="ml-5"
+							<a style="text-decoration: none" class="ml-5"
 							onClick="edit('修改信息','${pageContext.request.contextPath }/room/getRoomById/${room.id}?view=admin/room/room-edit','10001')"
 							href="javascript:;" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
 							<a style="text-decoration: none" class="ml-5"

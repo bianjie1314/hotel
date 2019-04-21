@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 	
-    <title>Mobile Shop</title>
+    <title>酒店预订</title>
 	
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath }/clientlib/css/bootstrap.min.css" type="text/css">
@@ -52,7 +52,7 @@
 				<div class="col-lg-12">
 					<ul class="breadcrumb">
 						<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">我的订单</a></li>
-						<li><a href="../index.jsp">待支付订单</a></li>
+						<li><a href="${pageContext.request.contextPath }/dispatcher?view=/client/order/cart">待支付订单</a></li>
 					</ul>
 				</div>
 			</div>
@@ -84,7 +84,7 @@
 								<td><span style="color: red" id="remark"></span></td>
 							</tr>
 						</table>
-						<center><a href="#" class="btn btn-3">继续抢购</a>&nbsp;
+						<center><a href="#" class="btn btn-3">继续预约</a>&nbsp;
 							<a  href="javascript:;" onclick="payOrder()" class="btn btn-2">确认支付</a></center>
 					</div>
 				</div>
@@ -187,47 +187,12 @@
         });
     }
 
-    /** 单条-更新 */
-    function updateOrderNum(id,numIndex,phoneId) {
-        var numName = "num"+numIndex;
-        layer.confirm('确认要更新吗？', function(index) {
-            $.ajax({
-                type : 'post',
-                url : "${pageContext.request.contextPath }/client/order/updateNum",
-                dataType : 'json',
-                contentType: 'application/json;charset=UTF-8',
-                data:JSON.stringify({
-                    "id":id,
-                    "num":$("[name="+numName+"]").val(),
-					"phoneId":phoneId
-                }),
-                success : function(data) {
-                    if (data.result) {
-                        layer.msg(data.msg, {
-                            icon : 1,
-                            time : 1000
-                        });
-                        location.reload();
-                    } else {
-                        layer.msg(data.msg, {
-                            icon : 5,
-                            time : 1000
-                        });
-                    }
-                },
-                error : function(data) {
-                    console.log(data.msg);
-                }
-            });
-        });
-    }
-
-    /** 单条-删除 */
-    function removeOrder(id) {
-        layer.confirm('确认要删除吗？', function(index) {
+    /** 单条-取消订单 */
+    function cancerOrder(id) {
+        layer.confirm('确认要取消订单吗？', function(index) {
             $.ajax({
                 type : 'get',
-                url : "${pageContext.request.contextPath }/client/order/delete/"+id,
+                url : "${pageContext.request.contextPath }/client/order/cancerOrder/"+id,
                 dataType : 'json',
                 success : function(data) {
                     if (data.result) {
@@ -268,14 +233,18 @@
 							var order  = pageViewVo.data[i];
                             totalPrice += order.pay;
                             var numName = "num"+i;
-							<!-- 单个手机 -->
+                            var pc = '${pageContext.request.contextPath }/clientlib/images/r'+((i+1)%5+1)+'.jpg';
+                            if (order.room.pictures != null){
+                                pc =  '${pageContext.request.contextPath }'+order.room.pictures[0].pathUrl;
+                            }
+
 							var orderView =
 								'<div class="row">'+
 									'<div class="product well">'+
 										'<div class="col-md-5">'+
 											'<div class="image" style="width:400px;height:200px" >'+
                                 				'<a href="${pageContext.request.contextPath }/client/room/getRoomById/'+order.room.id+'?view=/client/roomInfo">'+
-													'<img src="${pageContext.request.contextPath }/clientlib/images/r'+(i+1)+'.jpg" />'+
+													'<img src="'+pc+'" style="width:280px;height:220px"/>'+
 												'</a>'+
 											'</div>'+
 										'</div>'+
@@ -290,7 +259,7 @@
 													'</ul>'+
 												'</div>'+
 												'<div class="price">应付金额:￥'+order.pay+'</div>'+
-                                                 '<a href="javascript:;" onclick="removeOrder('+order.id+')" class="btn btn-warning">删除</a>'+
+                                                 '<a href="javascript:;" onclick="cancerOrder('+order.id+')" class="btn btn-warning">取消订单</a>'+
 												'<div><label class="checkbox"><input type="checkbox" checked onchange="checkChange()" value="'+order.id+'" name="checkPay">点我咯</label></div>'+
 											'</div>'+
 										'</div>'+
@@ -300,7 +269,7 @@
 							$("#cartPhone").append(orderView);
 						}
 					}else {
-                        $("#cartPhone").append("购物车空");
+                        $("#cartPhone").append("无待支付订单");
                     }
                     $("#phonePrice").text(totalPrice);
                     $("#totalPrice").text(totalPrice);

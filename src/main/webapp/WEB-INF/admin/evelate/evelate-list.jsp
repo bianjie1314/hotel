@@ -47,7 +47,8 @@
 			<select name="category"class="select">
 					<option value="" selected="selected">全部分类</option>
 					<option value="1">未审核</option>
-					<option value="2">已审核</option>
+					<option value="2">审核通过</option>
+					<option value="3">审核拒绝</option>
 			</select>
 			</span>
 			</span> 日期范围： <input type="text"
@@ -66,8 +67,8 @@
 		<div class="cl pd-5 bg-1 bk-gray mt-20">
 			<span class="l">
 				<a href="javascript:;" onclick="return deleteChoice('${pageContext.request.contextPath }/evelate/deleteEvelateByChoice')" class="btn btn-danger  radius"><i class="Hui-iconfont">&#xe6e2;</i>批量删除</a>
-				<a href="javascript:;" onclick="return deleteChoice('${pageContext.request.contextPath }/evelate/deleteEvelateByChoice')" class="btn btn-primary  radius"><i class="Hui-iconfont">&#xe6e1;</i>审核通过</a>
-				<a href="javascript:;" onclick="return deleteChoice('${pageContext.request.contextPath }/evelate/deleteEvelateByChoice')" class="btn btn-warning  radius"><i class="Hui-iconfont">&#xe6dd;</i>审核拒绝</a>
+				<a href="javascript:;" onclick="return audEvelate('${pageContext.request.contextPath }/evelate/auditEvelate',2)" class="btn btn-primary  radius"><i class="Hui-iconfont">&#xe6e1;</i>审核通过</a>
+				<a href="javascript:;" onclick="return audEvelate('${pageContext.request.contextPath }/evelate/auditEvelate',3)" class="btn btn-warning  radius"><i class="Hui-iconfont">&#xe6dd;</i>审核拒绝</a>
 					</span> <span class="r"><strong></strong>
 			</span>
 		</div>
@@ -101,11 +102,14 @@
 						<td>
 								<c:choose>
 									<c:when test="${evelate.status == 1}">
-								<span class="label label-primary radius"> 未审核</span>
+								<span class="label label-info radius"> 未审核</span>
 								</c:when>
 								<c:when test="${evelate.status == 2}">
-								<span class="label label-warning radius">已审核 </span>
+								<span class="label label-primary radius">审核通过 </span>
 								</c:when>
+									<c:when test="${evelate.status == 3}">
+										<span class="label label-warning radius">审核拒绝 </span>
+									</c:when>
 									<c:otherwise>
 									<span class="label label-default radius">无效记录</span>
 									</c:otherwise>
@@ -143,6 +147,59 @@
 	<script type="text/javascript">
 		// 设置所搜返回后的选中值
 		$(".select").val("${searchVo.category}");
+
+
+
+        /** 审核评论* */
+        function audEvelate(targetUrl,status) {
+            var checkbox = document.getElementsByName("choice");
+            var isSelect;
+            var dataStr = "";
+            var checkObj = new Array();
+            for (var i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked) {
+                    isSelect = true;
+                    dataStr += "," + checkbox[i].value;
+                    checkObj.push(checkbox[i]);
+                }
+            }
+            if (!isSelect) {
+                layer.alert("请选择要操作的数据");
+                return false;
+            }
+
+            layer.confirm('确认处理吗？', function(index) {
+                $.ajax({
+                    type : 'get',
+                    url : targetUrl,
+                    dataType : 'json',
+                    data : {
+                        "choiceId" : dataStr,
+                        "status" : status
+                    },
+                    success : function(data) {
+                        if (data.result) {
+                            layer.msg(data.msg, {
+                                icon : 1,
+                                time : 2000
+                            });
+                            window.location.replace( window.location.href);
+                        } else {
+                            layer.msg(data.msg, {
+                                icon : 5,
+                                time : 2000
+                            });
+                        }
+
+                    },
+                    error : function(data) {
+                        console.log(data.msg);
+                    }
+                });
+
+            });
+        }
+
 	</script>
 </body>
 </html>

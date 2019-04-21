@@ -44,7 +44,7 @@
 	<!--search-->
 	<jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/noSearch.jsp"/>
 	<!--Navigation-->
-	<jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/loginRegMenu.jsp"/>
+	<jsp:include page="${pageContext.request.contextPath }/WEB-INF/client/common/onlyIndexMenu.jsp"/>
 	<!--//////////////////////////////////////////////////-->
 	<!--///////////////////Account Page///////////////////-->
 	<!--//////////////////////////////////////////////////-->

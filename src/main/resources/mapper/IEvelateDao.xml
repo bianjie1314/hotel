@@ -7,8 +7,8 @@
         <selectKey order="AFTER" resultType="int" keyProperty="id">
             select last_insert_id()
         </selectKey>
-        insert into evelate(content,order_id,create_time,status,updateTime)
-        values(#{content},#{orderId},#{createTime},#{status},#{update_time})
+        insert into evelate(content,order_id,create_time,status,update_time)
+        values(#{content},#{orderId},#{createTime},#{status},#{updateTime})
     </insert>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -41,10 +41,19 @@
         where id=#{id}
     </update>
 
+    <update id="updateStatus">
+        update evelate set status = #{status}, update_time = now()
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </update>
+
     <sql id="querySql">
         from  evelate e
         left join orders o on e.order_id = o.id
         left join user u on o.user_id = u.id
+        left join room r on o.room_id = r.id
         <where>
             <if test="inputCheck != null">
                 and o.order_code like '%${inputCheck}%'
@@ -69,8 +78,9 @@
 
     <select id="selectEvelateList" parameterType="HashMap" resultMap="evelateMap">
         select e.*,
-        o.order_code as orderCode,
-        u.id as uId,u.username as uName
+        o.order_code as orderCode,o.pay as oPay,
+        u.id as uId,u.username as uName,
+        r.id as rId,r.number as rNumber,r.money as rMoney
         <include refid="querySql" />
         order by e.create_time desc
         <if test="start != null">
@@ -91,11 +101,17 @@
         <result property="orderId" column="order_id"/>
         <result property="orderCode" column="orderCode" />
         <result property="status" column="status"/>
+        <result property="pay" column="oPay"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <association property="user" javaType="UserPojo">
             <result property="id" column="uId"/>
             <result property="username" column="uName"/>
+        </association>
+        <association property="room" javaType="RoomPojo">
+            <result property="id" column="rId"/>
+            <result property="money" column="rMoney"/>
+            <result property="number" column="rNumber"/>
         </association>
     </resultMap>
 
