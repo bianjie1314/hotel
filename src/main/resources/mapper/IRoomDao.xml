@@ -46,6 +46,9 @@
             <if test="window > 0">
                 window = #{window},
             </if>
+            <if test="pictureIds != null">
+                picture_ids = #{pictureIds},
+            </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
