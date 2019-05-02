@@ -68,8 +68,14 @@ public class RoomController {
     //更新
     @RequestMapping(value="/update")
     @ResponseBody
-    public CommonResult updateRoom(@RequestBody RoomPojo roomPojo){
+    public CommonResult updateRoom(@RequestBody RoomPojo roomPojo, HttpServletRequest request){
         logger.info("********** 进入 updateRoom 方法,roomPojo={}********** ",new Object[]{roomPojo});
+        UserPojo userInfo = (UserPojo)request.getSession().getAttribute("userInfo");
+        Object attribute = request.getSession().getAttribute("pic" + userInfo.getId());
+        if (attribute != null){
+            roomPojo.setPictureIds((String)attribute);
+        }
+        request.getSession().removeAttribute("pic" + userInfo.getId());
         return  iRoomService.updateBean(roomPojo);
     }
 
