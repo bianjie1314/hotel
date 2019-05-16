@@ -105,8 +105,8 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password) ||StringUtils.isEmpty(username) || StringUtils.isEmpty(type)){
             return  CommonResult.ERROR(MessageConstant.PARAM_ERROR);
         }
-        List<UserPojo> userPojos = iUserDao.getByMobile(mobile);
-        if (userPojos != null && userPojos.size() > 0){//已经注册过
+        int count = iUserDao.countByMobile(mobile);
+        if (count > 0){//已经注册过
             return  CommonResult.ERROR(MessageConstant.MOBILE_HAS_REG);
         }
         UserPojo userPojo = new UserPojo();

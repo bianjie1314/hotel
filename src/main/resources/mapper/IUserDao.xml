@@ -88,6 +88,10 @@
         select count(*) from user where mobile=#{mobile}
     </select>
 
+    <select id="getByMobile" parameterType="string" resultType="UserPojo">
+        select * from user where mobile=#{mobile}
+    </select>
+
     <select id="getByMobileAndPwd" parameterType="string" resultType="UserPojo">
         select id,mobile,username,identity,balance,create_time,update_time,role_id
         from  user where mobile = #{mobile} and password = #{password}
